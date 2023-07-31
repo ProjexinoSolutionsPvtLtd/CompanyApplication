@@ -2,18 +2,22 @@ package com.spn.companyapplication.screens
 
 import android.Manifest.permission.CAMERA
 import android.app.Activity
+import android.content.ContentResolver
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -46,7 +50,7 @@ class AddLead : ComponentActivity() {
                         context = this@AddLead,
                         activity = this@AddLead,
                         content = {
-                            Column(Modifier.padding(16.dp)) {
+                            Column(Modifier.padding(16.dp).verticalScroll(ScrollState(0))) {
                                 Text(
                                     text = "Fill the form to add a new Lead", style = TextStyle(
                                         fontFamily = FontFamily(Font(R.font.outfit_bold)),
@@ -98,10 +102,11 @@ class AddLead : ComponentActivity() {
                                     onSelect = { viewModel.onDateTimeSelect(it) }
                                 )
 //                                AddImageInput(context = this@AddLead)
-                                DocumentPickerScreen(this@AddLead, onDocumentPicked = { uri ->
+                                val contentResolver = LocalContext.current.contentResolver
+                                AddDocumentInput(this@AddLead, onDocumentPicked = { uri ->
                                     // Handle the selected document URI here
                                     // uri is the URI of the selected document
-                                })
+                                }, viewModel, contentResolver)
                             }
                         })
                 }

@@ -1,5 +1,9 @@
 package com.spn.companyapplication.viewmodels
 
+import android.content.ContentResolver
+import android.database.Cursor
+import android.net.Uri
+import android.provider.OpenableColumns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +25,11 @@ class AddLeadViewModel(): ViewModel(){
     var email by mutableStateOf("")
     var address by mutableStateOf("")
     var requirement by mutableStateOf("")
+
+    var selectedDocumentUri: Uri? by mutableStateOf(null)
+    var selectedDocumentName: String by mutableStateOf("")
+    var selectedDocumentSize: Long by mutableStateOf(0L)
+    var selectedDocumentMimeType: String by mutableStateOf("")
 
     fun nameChange(text: String){
         name = text
@@ -53,5 +62,33 @@ class AddLeadViewModel(): ViewModel(){
     fun onDateTimeSelect(time: Calendar) {
         dateTime = time
         dateTimeValue = dateTimeFormat.format(time.time)
+    }
+
+    fun getDocumentName(contentResolver: ContentResolver, uri: Uri): String? {
+        var displayName: String? = null
+        val cursor: Cursor? = contentResolver.query(uri, null, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                displayName = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+            }
+        }
+        cursor?.close()
+        return displayName
+    }
+
+    fun getDocumentSize(contentResolver: ContentResolver, uri: Uri): Long? {
+        var size: Long? = null
+        val cursor: Cursor? = contentResolver.query(uri, null, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                size = it.getLong(it.getColumnIndex(OpenableColumns.SIZE))
+            }
+        }
+        cursor?.close()
+        return size
+    }
+
+    fun getDocumentMimeType(contentResolver: ContentResolver, uri: Uri): String? {
+        return contentResolver.getType(uri)
     }
 }
