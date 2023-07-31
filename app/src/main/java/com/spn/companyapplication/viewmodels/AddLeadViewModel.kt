@@ -2,8 +2,10 @@ package com.spn.companyapplication.viewmodels
 
 import android.content.ContentResolver
 import android.database.Cursor
+import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.OpenableColumns
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +32,9 @@ class AddLeadViewModel(): ViewModel(){
     var selectedDocumentName: String by mutableStateOf("")
     var selectedDocumentSize: Long by mutableStateOf(0L)
     var selectedDocumentMimeType: String by mutableStateOf("")
+
+    var capturedBitmap by mutableStateOf<Bitmap?>(null)
+    var showImage by mutableStateOf(false)
 
     fun nameChange(text: String){
         name = text
@@ -89,6 +94,15 @@ class AddLeadViewModel(): ViewModel(){
     }
 
     fun getDocumentMimeType(contentResolver: ContentResolver, uri: Uri): String? {
-        return contentResolver.getType(uri)
+        var type = ""
+        var list = contentResolver.getType(uri)?.split("/")!!
+
+        for (a in list.indices){
+            if(a == 1){
+                type = list[a]
+                Log.d("TAG99", type)
+            }
+        }
+        return contentResolver.getType(uri)?.split("/")!![1].uppercase()
     }
 }

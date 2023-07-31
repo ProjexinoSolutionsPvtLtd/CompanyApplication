@@ -67,7 +67,7 @@ class Login : ComponentActivity() {
                         )
                         Text(
                             text = "Welcome back,\nYou have been missed", style = TextStyle(
-                                fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                                fontFamily = FontFamily(Font(R.font.outfit_regular)),
                                 fontSize = 28.sp,
                                 color = Color.Black
                             )

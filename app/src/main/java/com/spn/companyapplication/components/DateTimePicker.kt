@@ -90,7 +90,7 @@ fun DateTimePicker(
             Icon(
                 painter = painterResource(id = R.drawable.ic_datetime),
                 contentDescription = "icon",
-                tint = Color(("#130b5c").toColorInt())
+                tint = Color.Black
             )
         }
 

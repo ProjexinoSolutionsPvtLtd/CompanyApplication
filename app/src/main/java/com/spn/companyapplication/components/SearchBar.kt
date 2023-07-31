@@ -15,6 +15,8 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -42,7 +44,11 @@ fun SearchBar(
             },
             maxLines = 1,
             singleLine = true,
-            textStyle = TextStyle(color = Color.Black, fontSize = 16.sp),
+            textStyle = TextStyle(
+                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                fontSize = 17.sp,
+                color = Color.Black
+            ),
             modifier = Modifier
                 .fillMaxWidth()
 //                .shadow(5.dp, CircleShape)
@@ -70,7 +76,12 @@ fun SearchBar(
                     Text(
                         text = hint,
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.Normal
+                        fontWeight = FontWeight.Normal,
+                        style = TextStyle(
+                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                            fontSize = 17.sp,
+                            color = Color.Black
+                        )
                     )
                 },
                 interactionSource = MutableInteractionSource(),

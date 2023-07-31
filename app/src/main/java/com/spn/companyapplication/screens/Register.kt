@@ -5,19 +5,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.*
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -26,7 +24,6 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
@@ -34,7 +31,6 @@ import com.spn.companyapplication.R
 import com.spn.companyapplication.components.Button
 import com.spn.companyapplication.components.TextInput
 import com.spn.companyapplication.ui.theme.CompanyApplicationTheme
-import com.spn.companyapplication.viewmodels.LoginViewModel
 import com.spn.companyapplication.viewmodels.RegsiterViewModel
 
 
@@ -44,7 +40,7 @@ class Register : ComponentActivity() {
         val viewModel by viewModels<RegsiterViewModel>()
         setContent {
             CompanyApplicationTheme {
-                // A surface container using the 'background' color from the theme
+                val rotationState by animateFloatAsState(targetValue = if (viewModel.showRoleOptions) 180f else 0f)
                 Surface(
                     modifier = Modifier
                         .fillMaxSize()
@@ -66,8 +62,9 @@ class Register : ComponentActivity() {
                             )
                         )
                         Text(
-                            text = "Welcome! Have a fantastic journey with out app!", style = TextStyle(
-                                fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                            text = "Welcome! Have a fantastic journey with out app!",
+                            style = TextStyle(
+                                fontFamily = FontFamily(Font(R.font.outfit_regular)),
                                 fontSize = 28.sp,
                                 color = Color.Black
                             )
@@ -79,10 +76,71 @@ class Register : ComponentActivity() {
                             label = "Name",
                             value = viewModel.name,
                             onChange = { viewModel.nameChange(it) })
-                        TextInput(
-                            label = "Mobile Number",
-                            value = viewModel.number,
-                            onChange = { viewModel.numberChange(it) })
+                        Spacer(Modifier.height(10.dp))
+                        Card(
+                            elevation = 0.dp,
+                            border = BorderStroke(
+                                1.dp, Color(("#9f9f9f").toColorInt())
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 55.dp)
+                                .clickable {
+                                    viewModel.showRoleOptions = true
+                                }) {
+                            Column(
+                                Modifier
+                                    .padding(
+                                        horizontal = 13.dp,
+                                        vertical = 8.dp
+                                    )
+                                    .fillMaxSize(), verticalArrangement = Arrangement.Center
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxSize(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        viewModel.role,
+                                        style = TextStyle(
+                                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                            fontSize = 17.sp,
+                                            color = Color.Black
+                                        )
+                                    )
+
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_arrow_down),
+                                        contentDescription = "",
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .rotate(rotationState)
+                                    )
+                                }
+                                if (viewModel.showRoleOptions) {
+                                    DropdownMenu(
+                                        expanded = viewModel.showRoleOptions,
+                                        onDismissRequest = { viewModel.showRoleOptions = false },
+                                    ) {
+                                        viewModel.roleOptions.forEach { option ->
+                                            DropdownMenuItem(onClick = {
+                                                viewModel.role = option
+                                                viewModel.showRoleOptions = false
+                                            }) {
+                                                Text(
+                                                    text = option, style = TextStyle(
+                                                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                                        fontSize = 16.sp,
+                                                        color = Color.Black
+                                                    )
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         TextInput(
                             label = "Email",
                             value = viewModel.email,
@@ -127,7 +185,8 @@ class Register : ComponentActivity() {
                                 fontSize = 16.sp,
                                 color = Color.Black
                             ),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
                                 .clickable(
                                     indication = null,
                                     interactionSource = MutableInteractionSource(),

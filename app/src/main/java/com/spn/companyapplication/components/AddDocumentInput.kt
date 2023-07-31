@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
@@ -32,8 +33,6 @@ import com.spn.companyapplication.viewmodels.AddLeadViewModel
 
 @Composable
 fun AddDocumentInput(
-    activity: ComponentActivity,
-    onDocumentPicked: (Uri?) -> Unit,
     viewModel: AddLeadViewModel,
     contentResolver: ContentResolver
 ) {
@@ -74,14 +73,15 @@ fun AddDocumentInput(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    if(viewModel.selectedDocumentUri != null) "Document" else "Upload Document", style = TextStyle(
-                        fontFamily = FontFamily(Font(if(viewModel.selectedDocumentUri != null) R.font.outfit_medium else R.font.outfit_regular)),
+                    if (viewModel.selectedDocumentUri != null) "Document" else "Upload Document",
+                    style = TextStyle(
+                        fontFamily = FontFamily(Font(if (viewModel.selectedDocumentUri != null) R.font.outfit_medium else R.font.outfit_regular)),
                         fontSize = 17.sp,
                         color = Color.Black
                     )
                 )
 
-                if(viewModel.selectedDocumentUri == null){
+                if (viewModel.selectedDocumentUri == null) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_upload),
                         contentDescription = "",
@@ -92,28 +92,45 @@ fun AddDocumentInput(
 
 
             if (viewModel.selectedDocumentUri != null) {
-                Spacer(modifier = Modifier.height(10.dp))
-                Text(
-                    viewModel.selectedDocumentName, style = TextStyle(
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        fontSize = 17.sp,
-                        color = Color.Black
-                    )
-                )
-                Text(
-                    viewModel.selectedDocumentMimeType, style = TextStyle(
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        fontSize = 17.sp,
-                        color = Color.Black
-                    )
-                )
-                Text(
-                    viewModel.selectedDocumentSize.toString(), style = TextStyle(
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        fontSize = 17.sp,
-                        color = Color.Black
-                    )
-                )
+                Spacer(modifier = Modifier.height(5.dp))
+                Card(
+                    modifier = Modifier.heightIn(min = 50.dp),
+                    shape = RoundedCornerShape(3.dp),
+                    backgroundColor = Color(("#c3c3c3").toColorInt()),
+                    elevation = 0.dp
+                ) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(7.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            viewModel.selectedDocumentName, style = TextStyle(
+                                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                fontSize = 17.sp,
+                                color = Color.Black
+                            ),
+                            modifier = Modifier.widthIn(max = 250.dp)
+                        )
+                        Text(
+                            viewModel.selectedDocumentMimeType, style = TextStyle(
+                                fontFamily = FontFamily(Font(R.font.outfit_semibold)),
+                                fontSize = 12.sp,
+                                color = Color.Black
+                            )
+                        )
+                    }
+
+//                Text(
+//                    viewModel.selectedDocumentSize.toString(), style = TextStyle(
+//                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+//                        fontSize = 17.sp,
+//                        color = Color.Black
+//                    )
+//                )
+                }
             }
         }
     }
