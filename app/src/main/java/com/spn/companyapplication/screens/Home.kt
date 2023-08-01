@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.*
@@ -117,7 +118,7 @@ class Home : ComponentActivity() {
                                                 viewModel.homeScreenItems[index].title,
                                                 style = TextStyle(
                                                     fontFamily = FontFamily(Font(R.font.outfit_bold)),
-                                                    fontSize = 20.sp,
+                                                    fontSize = 18.sp,
                                                     color = androidx.compose.ui.graphics.Color.Black
                                                 )
                                             )
@@ -141,17 +142,19 @@ class Home : ComponentActivity() {
                                     Text(
                                         "Areas of Expertise", style = TextStyle(
                                             fontFamily = FontFamily(Font(R.font.outfit_semibold)),
-                                            fontSize = 17.sp,
-                                            color = Color.DarkGray
+                                            fontSize = 15.sp,
+                                            color = Color.Gray
                                         )
                                     )
                                     Text(
                                         "We're good at these areas to work", style = TextStyle(
                                             fontFamily = FontFamily(Font(R.font.outfit_semibold)),
-                                            fontSize = 25.sp,
+                                            fontSize = 23.sp,
                                             color = Color.Black
                                         )
                                     )
+
+                                    Spacer(modifier = Modifier.height(10.dp))
 
                                     HorizontalPager(
                                         count = viewModel.expertiseItems.size,
@@ -159,12 +162,20 @@ class Home : ComponentActivity() {
                                     ) { page ->
                                         val expertiseItem =
                                             viewModel.expertiseItems[page]
-                                        Card(Modifier.fillMaxWidth()) {
-                                            Column(Modifier.padding(8.dp)) {
-                                                Image(
+                                        Card(
+                                            Modifier.fillMaxWidth(),
+                                            shape = RoundedCornerShape(5.dp),
+                                            elevation = 1.dp,
+                                            border = BorderStroke(
+                                                0.5.dp,
+                                                Color.LightGray.copy(0.6f)
+                                            )
+                                        ) {
+                                            Column(Modifier.padding(10.dp)) {
+                                                Icon(
                                                     painter = painterResource(id = expertiseItem.icon),
                                                     contentDescription = null,
-                                                    contentScale = ContentScale.Fit,
+                                                    tint = Color(("#130b5c").toColorInt()),
                                                     modifier = Modifier
                                                         .size(50.dp)
                                                         .clip(RoundedCornerShape(8.dp)),
