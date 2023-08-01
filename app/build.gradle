@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "com.spn.companyapplication"
-        minSdk 21
+        minSdk 27
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -41,7 +41,9 @@ android {
     }
     packagingOptions {
         resources {
+            exclude 'META-INF/DEPENDENCIES'
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
+            exclude("org/apache/batik/util/gui/resources/flags/flag_ro.gif")
         }
     }
 }
@@ -68,4 +70,12 @@ dependencies {
     implementation "com.google.firebase:firebase-firestore-ktx"
 
     implementation("com.google.firebase:firebase-analytics-ktx")
+
+//    implementation 'org.apache.poi:poi-ooxml:5.0.0'
+    implementation 'org.apache.xmlbeans:xmlbeans:5.0.0'
+
+    implementation ('org.apache.poi:poi-ooxml:5.0.0') {
+        exclude group: 'org.apache.xmlgraphics', module: 'batik-all'
+        exclude group: 'org.apache.xmlbeans', module: 'xmlbeans'
+    }
 }

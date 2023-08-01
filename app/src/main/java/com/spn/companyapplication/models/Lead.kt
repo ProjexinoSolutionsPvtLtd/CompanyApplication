@@ -13,4 +13,5 @@ data class Lead(
     val address: String,
     val dateTime: String,
     val status: String,         //Opened, Closed, Contacted etc.
+    val createdBy: String,
 )
