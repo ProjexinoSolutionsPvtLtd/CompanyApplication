@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.toColorInt
 import com.spn.companyapplication.R
 import com.spn.companyapplication.components.*
 import com.spn.companyapplication.ui.theme.CompanyApplicationTheme
@@ -106,6 +107,15 @@ class AddLead : ComponentActivity() {
                                 AddDocumentInput(viewModel, LocalContext.current.contentResolver)
                                 Spacer(Modifier.height(20.dp))
                                 AddImageInput(this@AddLead, viewModel)
+                                Spacer(Modifier.height(30.dp))
+                                Button(
+                                    text = "Submit",
+                                    onClick = {
+
+                                    },
+                                    color = Color(("#130b5c").toColorInt()),
+                                    uppercase = false
+                                )
                             }
                         })
                 }
