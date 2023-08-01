@@ -9,10 +9,12 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.core.content.ContextCompat.startActivity
+import com.google.firebase.auth.FirebaseAuth
 import com.spn.companyapplication.R
 import com.spn.companyapplication.models.MenuItem
 import com.spn.companyapplication.screens.AddLead
 import com.spn.companyapplication.screens.Home
+import com.spn.companyapplication.screens.Login
 import com.spn.companyapplication.screens.ViewLead
 import kotlinx.coroutines.launch
 
@@ -56,6 +58,12 @@ fun Drawer(title: String, context: Context, activity: Activity, content: @Compos
                         contentDescription = "",
                         icon = R.drawable.ic_baseline_people_24
                     ),
+                    MenuItem(
+                        id = "logout",
+                        title = "Logout",
+                        contentDescription = "",
+                        icon = R.drawable.ic_logout
+                    ),
                 ),
                 onItemClick = {
                     when (it.id) {
@@ -83,6 +91,13 @@ fun Drawer(title: String, context: Context, activity: Activity, content: @Compos
                             ),
                             null
                         )
+                        "logout" -> {
+                            val firebaseAuth = FirebaseAuth.getInstance()
+                            firebaseAuth.signOut()
+
+                            activity.finish()
+                            startActivity(context, Intent(activity, Login::class.java),null)
+                        }
                     }
                 }
             )

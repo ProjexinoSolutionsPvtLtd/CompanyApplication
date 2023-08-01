@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "258926927874",
+    "project_id": "projexino-solutions",
+    "storage_bucket": "projexino-solutions.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:258926927874:android:6639c4343fce4a5eabc71b",
+        "android_client_info": {
+          "package_name": "com.spn.companyapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "258926927874-sd44ndnjshbri6aq7nrvj6ngls9c4fes.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6SyM9coaNAAgl2w-xKZcAHZgbZNqWPV8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "258926927874-sd44ndnjshbri6aq7nrvj6ngls9c4fes.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -60,7 +60,7 @@ fun TextInput(
             .fillMaxWidth()
             .padding(bottom = 0.dp)
 //            .border(BorderStroke(1.dp, Color(("#130b5c").toColorInt())))
-            .height(height ?: 60.dp),
+            .height(height ?: 65.dp),
         textStyle = TextStyle(
             fontFamily = FontFamily(Font(R.font.outfit_regular)),
             fontSize = 17.sp,

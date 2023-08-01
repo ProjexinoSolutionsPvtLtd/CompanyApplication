@@ -12,10 +12,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -31,14 +33,20 @@ import com.spn.companyapplication.R
 import com.spn.companyapplication.components.Button
 import com.spn.companyapplication.components.TextInput
 import com.spn.companyapplication.ui.theme.CompanyApplicationTheme
-import com.spn.companyapplication.viewmodels.RegsiterViewModel
+import com.spn.companyapplication.viewmodels.RegisterViewModel
+import com.google.firebase.auth.FirebaseAuth
+
+//import com.google.firebase.firestore.FirebaseFirestore
 
 
 class Register : ComponentActivity() {
+    @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val viewModel by viewModels<RegsiterViewModel>()
+        val viewModel by viewModels<RegisterViewModel>()
         setContent {
+            viewModel.validation()
+            val keyboardController = LocalSoftwareKeyboardController.current
             CompanyApplicationTheme {
                 val rotationState by animateFloatAsState(targetValue = if (viewModel.showRoleOptions) 180f else 0f)
                 Surface(
@@ -47,7 +55,15 @@ class Register : ComponentActivity() {
                         .padding(16.dp),
                     color = Color(("#ffffff").toColorInt())
                 ) {
-                    Column(Modifier.verticalScroll(ScrollState(0))) {
+                    Column(Modifier
+                        .verticalScroll(ScrollState(0))
+                        .clickable(
+                            interactionSource = MutableInteractionSource(),
+                            indication = null,
+                            onClick = {
+                                keyboardController?.hide()
+                            }
+                        )) {
                         Image(
                             painter = painterResource(id = R.drawable.logo_with_bg),
                             contentDescription = "logo",
@@ -76,7 +92,7 @@ class Register : ComponentActivity() {
                             label = "Name",
                             value = viewModel.name,
                             onChange = { viewModel.nameChange(it) })
-                        Spacer(Modifier.height(10.dp))
+                        Spacer(Modifier.height(15.dp))
                         Card(
                             elevation = 0.dp,
                             border = BorderStroke(
@@ -141,34 +157,36 @@ class Register : ComponentActivity() {
                                 }
                             }
                         }
+                        Spacer(Modifier.height(15.dp))
                         TextInput(
                             label = "Email",
                             value = viewModel.email,
                             onChange = { viewModel.emailChange(it) })
+                        Spacer(Modifier.height(15.dp))
                         TextInput(
                             label = "Username",
                             value = viewModel.username,
                             onChange = { viewModel.usernameChange(it) })
+                        Spacer(Modifier.height(15.dp))
                         TextInput(
                             label = "Password",
                             value = viewModel.password,
-                            onChange = { viewModel.passwordChange(it) })
+                            onChange = { viewModel.passwordChange(it) },
+                            isPassword = true
+                        )
 
 
                         Spacer(Modifier.height(50.dp))
 
                         Button(
                             text = "Sign In",
+                            enabled = viewModel.validate,
                             onClick = {
-                                startActivity(
-                                    Intent(
-                                        this@Register,
-                                        Home::class.java
-                                    )
-                                )
+                                viewModel.registerUser(this@Register)
                             },
                             color = Color(("#130b5c").toColorInt()),
-                            uppercase = false
+                            uppercase = false,
+                            showLoader = viewModel.showLoader
                         )
 
                         val annotatedString = buildAnnotatedString {

@@ -22,7 +22,7 @@ import com.spn.companyapplication.R
 
 @Composable
 fun DrawerHeader() {
-    Image(painter = painterResource(id = R.drawable.logo_with_bg), contentDescription = "", modifier = Modifier.width(200.dp))
+    Image(painter = painterResource(id = R.drawable.logo_with_bg), contentDescription = "", modifier = Modifier.width(200.dp).padding(start = 16.dp))
 }
 
 @Composable

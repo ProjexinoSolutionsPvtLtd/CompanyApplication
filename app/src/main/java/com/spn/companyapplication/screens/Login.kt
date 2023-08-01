@@ -1,5 +1,6 @@
 package com.spn.companyapplication.screens
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -18,7 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.Key.Companion.Home
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -30,7 +31,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.graphics.toColorInt
+import com.google.firebase.auth.FirebaseAuth
 import com.spn.companyapplication.R
 import com.spn.companyapplication.components.Button
 import com.spn.companyapplication.components.TextInput
@@ -40,9 +44,18 @@ import com.spn.companyapplication.viewmodels.LoginViewModel
 class Login : ComponentActivity() {
     @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
+        val firebaseAuth = FirebaseAuth.getInstance()
+
+        if(firebaseAuth.currentUser != null){
+            startActivity(this@Login, Intent(this@Login, Home::class.java), null)
+            finish()
+        }
         val viewModel by viewModels<LoginViewModel>()
+
         super.onCreate(savedInstanceState)
         setContent {
+            viewModel.validation()
+            val keyboardController = LocalSoftwareKeyboardController.current
             CompanyApplicationTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -51,7 +64,14 @@ class Login : ComponentActivity() {
                         .padding(16.dp),
                     color = Color(("#ffffff").toColorInt())
                 ) {
-                    Column(Modifier.verticalScroll(ScrollState(0))) {
+                    Column(Modifier.verticalScroll(ScrollState(0))
+                        .clickable(
+                            interactionSource = MutableInteractionSource(),
+                            indication = null,
+                            onClick = {
+                                keyboardController?.hide()
+                            }
+                        )) {
                         Image(
                             painter = painterResource(id = R.drawable.logo_with_bg),
                             contentDescription = "logo",
@@ -79,26 +99,25 @@ class Login : ComponentActivity() {
                             label = "Email",
                             value = viewModel.username,
                             onChange = { viewModel.usernameChange(it) })
+                        Spacer(Modifier.height(15.dp))
                         TextInput(
                             label = "Password",
                             value = viewModel.password,
-                            onChange = { viewModel.passwordChange(it) })
-
+                            onChange = { viewModel.passwordChange(it) },
+                            isPassword = true
+                        )
 
                         Spacer(Modifier.height(50.dp))
 
                         Button(
                             text = "Login",
+                            enabled = viewModel.validate,
                             onClick = {
-                                startActivity(
-                                    Intent(
-                                        this@Login,
-                                        com.spn.companyapplication.screens.Home::class.java
-                                    )
-                                )
+                                viewModel.loginUser(this@Login)
                             },
                             color = Color(("#130b5c").toColorInt()),
-                            uppercase = false
+                            uppercase = false,
+                            showLoader = viewModel.showLoader
                         )
 
                         val annotatedString = buildAnnotatedString {

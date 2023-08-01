@@ -43,6 +43,8 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.spn.companyapplication.ui.theme.CompanyApplicationTheme
 import com.spn.companyapplication.R
 import com.spn.companyapplication.components.Drawer
@@ -54,6 +56,9 @@ class Home : ComponentActivity() {
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         val viewModel by viewModels<HomeViewModel>()
+
+        viewModel.getRole()
+
         super.onCreate(savedInstanceState)
         setContent {
             val pagerState = rememberPagerState()

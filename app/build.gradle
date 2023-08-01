@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -46,7 +47,6 @@ android {
 }
 
 dependencies {
-
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.material:material:1.3.1"
@@ -63,4 +63,9 @@ dependencies {
     implementation "com.google.accompanist:accompanist-pager:0.21.0-beta"
     implementation "com.google.accompanist:accompanist-pager-indicators:0.21.0-beta"
 
+    implementation(platform("com.google.firebase:firebase-bom:31.2.3"))
+    implementation "com.google.firebase:firebase-auth-ktx"
+    implementation "com.google.firebase:firebase-firestore-ktx"
+
+    implementation("com.google.firebase:firebase-analytics-ktx")
 }

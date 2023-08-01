@@ -60,34 +60,41 @@ fun Button(
         ) {
             if (showLoader)
                 CircularProgressIndicator(
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier.size(25.dp),
                     color = Color.White
                 )
 
             if (icon != -1) {
                 Icon(
                     painter = painterResource(id = icon),
-                    modifier = Modifier.size(iconSize ?: 20.dp).offset(x = (-8).dp),
+                    modifier = Modifier
+                        .size(iconSize ?: 20.dp)
+                        .offset(x = (-8).dp),
                     tint = tint,
                     contentDescription = null
                 )
             }
-            Text(
-                text = if(uppercase) text.uppercase() else text.replaceFirstChar { it.uppercase() },
-                style = TextStyle(
-                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                    fontSize = 16.sp,
-                    color = Color.White
-                ),
-                color = textColor,
-                fontSize = fontSize ?: 17.sp,
-                textAlign = TextAlign.Center
-            )
+            if(!showLoader){
+                Text(
+                    text = if (uppercase) text.uppercase() else text.replaceFirstChar { it.uppercase() },
+                    style = TextStyle(
+                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                        fontSize = 16.sp,
+                        color = Color.White
+                    ),
+                    color = textColor,
+                    fontSize = fontSize ?: 17.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
             if(trailingIcon != null){
                 Spacer(Modifier.width(10.dp))
                 Icon(
                     painter = painterResource(id = trailingIcon),
-                    modifier = Modifier.size(iconSize ?: 20.dp).offset(x = (-8).dp).rotate(trailingIconRotationState!!),
+                    modifier = Modifier
+                        .size(iconSize ?: 20.dp)
+                        .offset(x = (-8).dp)
+                        .rotate(trailingIconRotationState!!),
                     tint = Color.Unspecified,
                     contentDescription = null
                 )
