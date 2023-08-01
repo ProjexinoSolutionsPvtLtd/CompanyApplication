@@ -34,7 +34,7 @@
         <activity
             android:name=".screens.Login"
             android:exported="true"
-            android:label="Company Application"
+            android:label="@string/app_name"
             android:theme="@style/Theme.CompanyApplication">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
