@@ -37,7 +37,6 @@ import com.spn.companyapplication.viewmodels.ViewLeadViewModel
 
 val leadList = listOf(
     Lead(
-        "1",
         "Pranav Sanjay Rokade",
         "Decision Taker",
         "9561160673",
@@ -50,7 +49,6 @@ val leadList = listOf(
         "Admin"
     ),
     Lead(
-        "2",
         "Sanjay Ramdas Rokade",
         "CEO",
         "9561160502",
@@ -63,7 +61,6 @@ val leadList = listOf(
         "Business Development Manager"
     ),
     Lead(
-        "3",
         "Aditya Katkar",
         "Owner",
         "9900214214",
@@ -76,7 +73,6 @@ val leadList = listOf(
         "Admin"
     ),
     Lead(
-        "4",
         "Ambuj Tripathi",
         "Owner",
         "9241160673",

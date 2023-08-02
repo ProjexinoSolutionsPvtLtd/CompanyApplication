@@ -28,17 +28,4 @@ class HomeViewModel(): ViewModel(){
     )
 
     var currentExpertiseItemIndex by mutableStateOf(0)
-
-    fun getRole(){
-        val firebaseAuth = FirebaseAuth.getInstance()
-        val firebaseFirestore = FirebaseFirestore.getInstance()
-
-        val userId = firebaseAuth.currentUser?.uid.toString()
-
-        firebaseFirestore.collection("users").document(userId).get().addOnSuccessListener {
-            Log.d("TAG39", it.get("role").toString())
-        }.addOnFailureListener{e ->
-            Log.d("TAG41", e.toString())
-        }
-    }
 }

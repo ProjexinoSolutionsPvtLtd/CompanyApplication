@@ -57,8 +57,6 @@ class Home : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val viewModel by viewModels<HomeViewModel>()
 
-        viewModel.getRole()
-
         super.onCreate(savedInstanceState)
         setContent {
             val pagerState = rememberPagerState()

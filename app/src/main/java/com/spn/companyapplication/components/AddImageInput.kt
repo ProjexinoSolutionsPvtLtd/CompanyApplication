@@ -108,10 +108,3 @@ fun AddImageInput(context: Context, viewModel: AddLeadViewModel) {
         }
     }
 }
-
-private fun hasCameraPermission(activity: Activity): Boolean {
-    return ContextCompat.checkSelfPermission(
-        activity,
-        android.Manifest.permission.CAMERA
-    ) == PackageManager.PERMISSION_GRANTED
-}

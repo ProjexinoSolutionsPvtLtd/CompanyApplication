@@ -9,14 +9,18 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -32,11 +36,14 @@ import com.spn.companyapplication.viewmodels.AddLeadViewModel
 import java.util.*
 
 class AddLead : ComponentActivity() {
+    @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         requestCameraPermission(this@AddLead)
         val viewModel by viewModels<AddLeadViewModel>()
         super.onCreate(savedInstanceState)
         setContent {
+            viewModel.validation()
+            val keyboardController = LocalSoftwareKeyboardController.current
             CompanyApplicationTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -52,6 +59,13 @@ class AddLead : ComponentActivity() {
                                 Modifier
                                     .padding(16.dp)
                                     .verticalScroll(ScrollState(0))
+                                    .clickable(
+                                        interactionSource = MutableInteractionSource(),
+                                        indication = null,
+                                        onClick = {
+                                            keyboardController?.hide()
+                                        }
+                                    )
                             ) {
                                 Text(
                                     text = "Fill the form to add a new Lead", style = TextStyle(
@@ -110,8 +124,14 @@ class AddLead : ComponentActivity() {
                                 Spacer(Modifier.height(30.dp))
                                 Button(
                                     text = "Submit",
+                                    enabled = viewModel.validate,
                                     onClick = {
-
+                                        viewModel.uploadLead(this@AddLead)
+//                                        ContextCompat.startActivity(
+//                                            this@AddLead,
+//                                            Intent(this@AddLead, Home::class.java),
+//                                            null
+//                                        )
                                     },
                                     color = Color(("#130b5c").toColorInt()),
                                     uppercase = false
