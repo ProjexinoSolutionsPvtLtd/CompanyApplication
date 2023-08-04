@@ -62,21 +62,27 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
 
+    //Pager
     implementation "com.google.accompanist:accompanist-pager:0.21.0-beta"
     implementation "com.google.accompanist:accompanist-pager-indicators:0.21.0-beta"
 
+    //Firebase
     implementation(platform("com.google.firebase:firebase-bom:31.2.3"))
     implementation "com.google.firebase:firebase-auth-ktx"
     implementation "com.google.firebase:firebase-firestore-ktx"
     implementation "com.google.firebase:firebase-storage-ktx"
-
     implementation("com.google.firebase:firebase-analytics-ktx")
 
+    //Excel
 //    implementation 'org.apache.poi:poi-ooxml:5.0.0'
     implementation 'org.apache.xmlbeans:xmlbeans:5.0.0'
-
     implementation ('org.apache.poi:poi-ooxml:5.0.0') {
         exclude group: 'org.apache.xmlgraphics', module: 'batik-all'
         exclude group: 'org.apache.xmlbeans', module: 'xmlbeans'
     }
+
+    //Coil
+    implementation "io.coil-kt:coil-compose:2.2.2"
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
 }

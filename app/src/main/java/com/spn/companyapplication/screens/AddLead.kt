@@ -126,7 +126,7 @@ class AddLead : ComponentActivity() {
                                     text = "Submit",
                                     enabled = viewModel.validate,
                                     onClick = {
-                                        viewModel.uploadLead(this@AddLead)
+                                        viewModel.uploadLead(this@AddLead, this@AddLead)
 //                                        ContextCompat.startActivity(
 //                                            this@AddLead,
 //                                            Intent(this@AddLead, Home::class.java),

@@ -1,5 +1,6 @@
 package com.spn.companyapplication.viewmodels
 
+import android.app.Activity
 import android.content.ContentResolver
 import android.content.Context
 import android.database.Cursor
@@ -18,6 +19,7 @@ import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.spn.companyapplication.R
 import com.spn.companyapplication.models.Lead
 import java.io.File
 import java.io.FileOutputStream
@@ -125,19 +127,9 @@ class AddLeadViewModel() : ViewModel() {
         return contentResolver.getType(uri)?.split("/")!![1].uppercase()
     }
 
-    fun getCurrentUserRole(): String {
-        val userId = firebaseAuth.currentUser?.uid.toString()
-
-        var currentUserRole = "Admin"
-
-        firebaseFirestore.collection("users").document(userId).get().addOnSuccessListener {
-            currentUserRole = it.get("role").toString()
-            Log.d("TAG39", currentUserRole)
-        }.addOnFailureListener { e ->
-            Log.d("TAG41", e.toString())
-        }
-
-        return currentUserRole
+    fun getCurrentUserRole(activity: Activity): String {
+        val sharedPreferences = activity.getSharedPreferences(R.string.app_name.toString(), Context.MODE_PRIVATE)
+        return sharedPreferences.getString("CurrentUserRole", "").toString()
     }
 
     fun getUriFromBitmap(context: Context, bitmap: Bitmap): Uri? {
@@ -157,22 +149,22 @@ class AddLeadViewModel() : ViewModel() {
         return FileProvider.getUriForFile(context, "${context.packageName}.provider", imageFile)
     }
 
-    fun uploadLead(context: Context) {
+    fun uploadLead(context: Context, activity: Activity) {
         if (capturedBitmap != null) {
-            imageUpload(context)
+            imageUpload(context, activity)
         }
 
         if (selectedDocumentUri != null && capturedBitmap == null) {
-            documentUpload(context)
+            documentUpload(context, activity)
         }
 
         if (selectedDocumentUri == null && capturedBitmap == null) {
-            leadDataUpload(context)
+            leadDataUpload(context, activity)
         }
     }
 
 
-    fun imageUpload(context: Context) {
+    fun imageUpload(context: Context, activity: Activity) {
         val imageReference =
             storageReference.child("lead_images/${System.currentTimeMillis()}.jpg")
 
@@ -188,9 +180,9 @@ class AddLeadViewModel() : ViewModel() {
                 imageUrl = imageTask.toString()
 
                 if (selectedDocumentUri != null) {
-                    documentUpload(context)
+                    documentUpload(context, activity)
                 } else {
-                    leadDataUpload(context)
+                    leadDataUpload(context, activity)
                 }
 
             }.addOnFailureListener { e ->
@@ -200,7 +192,7 @@ class AddLeadViewModel() : ViewModel() {
 
     }
 
-    fun documentUpload(context: Context) {
+    fun documentUpload(context: Context, activity: Activity) {
         val documentReference =
             storageReference.child("lead_documents/${selectedDocumentUri!!.lastPathSegment}")
 
@@ -213,14 +205,14 @@ class AddLeadViewModel() : ViewModel() {
         }.addOnCompleteListener { documentTask ->
             documentUrl = documentTask.result.toString()
 
-            leadDataUpload(context)
+            leadDataUpload(context, activity)
         }.addOnFailureListener { e ->
             Log.d("TAG180", e.toString())
         }
 
     }
 
-    fun leadDataUpload(context: Context) {
+    fun leadDataUpload(context: Context, activity: Activity) {
         val lead = hashMapOf(
             "name" to name,
             "role" to role,
@@ -231,9 +223,10 @@ class AddLeadViewModel() : ViewModel() {
             "address" to address,
             "dateTimeValue" to dateTimeValue,
             "status" to "Opened",
-            "createdBy" to getCurrentUserRole(),
+            "createdBy" to getCurrentUserRole(activity),
             "documentUrl" to documentUrl,
             "documentName" to selectedDocumentName,
+            "documentType" to selectedDocumentMimeType,
             "imageUrl" to imageUrl
         )
 

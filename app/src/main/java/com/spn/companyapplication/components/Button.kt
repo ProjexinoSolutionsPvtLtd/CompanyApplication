@@ -56,7 +56,7 @@ fun Button(
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(padding ?: 8.dp)
+            modifier = Modifier.padding(padding ?: 6.dp)
         ) {
             if (showLoader)
                 CircularProgressIndicator(

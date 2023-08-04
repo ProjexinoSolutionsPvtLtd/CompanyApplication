@@ -1,9 +1,11 @@
 package com.spn.companyapplication.components
 
+import android.content.Context
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -19,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -26,11 +29,14 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import com.spn.companyapplication.R
 import com.spn.companyapplication.models.Lead
+import com.spn.companyapplication.viewmodels.ViewLeadViewModel
 
 @Composable
-fun LeadCard(lead: Lead) {
+fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel) {
     var isExpanded by remember { mutableStateOf(false) }
     val rotationState by animateFloatAsState(targetValue = if (isExpanded) 180f else 0f)
     Card(
@@ -101,7 +107,11 @@ fun LeadCard(lead: Lead) {
                         value = lead.requirement,
                         weight = 0.5f
                     )
-                    headingWithValue(heading = "Date/Time", value = lead.dateTime, weight = 0.5f)
+                    headingWithValue(
+                        heading = "Date/Time",
+                        value = lead.dateTimeValue,
+                        weight = 0.5f
+                    )
                 }
                 Row(
                     Modifier
@@ -110,6 +120,41 @@ fun LeadCard(lead: Lead) {
                 ) {
                     headingWithValue(heading = "Address", value = lead.address, weight = 1f)
                 }
+
+                if (lead.documentUrl != "") {
+                    Divider(
+                        color = Color.LightGray.copy(0.7f),
+                        modifier = Modifier.padding(vertical = 10.dp)
+                    )
+
+                    Column(modifier = Modifier
+                        .clickable(
+                            interactionSource = MutableInteractionSource(),
+                            indication = null,
+                            onClick = {
+                                viewModel.openDocument(context, lead.documentUrl)
+                            }
+                        )) {
+                        Text(
+                            "Document", style = TextStyle(
+                                fontFamily = FontFamily(Font(R.font.outfit_semibold)),
+                                fontSize = 14.sp,
+                                color = Color.Gray
+                            )
+                        )
+                        Spacer(modifier = Modifier.height(5.dp))
+                        DocumentCard(lead.documentName, lead.documentType)
+                    }
+                }
+
+                //TODO: Implement fetching of image
+//                if(lead.imageUrl != ""){
+//                    if(lead.documentUrl == ""){
+//                        Divider(color = Color.LightGray.copy(0.7f), modifier = Modifier.padding(vertical = 10.dp))
+//                    }
+//
+//                    Text(lead.imageUrl)
+//                }
             }
 
             Row(

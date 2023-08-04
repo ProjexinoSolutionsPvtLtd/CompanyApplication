@@ -1,7 +1,7 @@
 package com.spn.companyapplication.viewmodels
 
-import android.content.ContentResolver
-import android.content.ContentValues
+import android.app.Activity
+import android.content.*
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -12,6 +12,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.capitalize
 import androidx.lifecycle.ViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.spn.companyapplication.R
 import com.spn.companyapplication.models.Lead
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
@@ -25,6 +28,10 @@ class ViewLeadViewModel(): ViewModel(){
     val sortOptions = listOf("Opened", "Contacted", "Hold", "Lost/Closed", "Converted")
     var showOptions by mutableStateOf(false)
     var selectedOption by mutableStateOf("")
+
+    var showContent by mutableStateOf(false)
+
+    val leadsList = mutableListOf<Lead>()
 
     @RequiresApi(Build.VERSION_CODES.Q)
     fun exportLeadsToExcel(leads: List<Lead>, contentResolver: ContentResolver) {
@@ -78,6 +85,85 @@ class ViewLeadViewModel(): ViewModel(){
             }
         } catch (e: IOException) {
             e.printStackTrace()
+        }
+    }
+
+    fun hideLoader(){
+        showContent = true
+    }
+
+    fun showLoader(){
+        showContent = false
+    }
+
+    fun fetchLeads(activity: Activity) {
+        showLoader()
+        leadsList.clear()
+        val firestore = FirebaseFirestore.getInstance()
+        val leadsCollection = firestore.collection("leads")
+
+        leadsCollection.get()
+            .addOnSuccessListener { querySnapshot ->
+                for (document in querySnapshot.documents) {
+                    val lead = document.toObject(Lead::class.java)
+                    lead?.let {
+                        leadsList.add(it)
+                    }
+                }
+
+                leadsList.forEach {
+                    Log.d("TAG116", it.name)
+                }
+
+                var _leadsList:  MutableList<Lead> = mutableListOf()
+                _leadsList.addAll(leadsList)
+
+                //Logic for bifurcating lists according to User Type
+                if(getCurrentUserRole(activity) != "Admin"){
+                    _leadsList.forEach {
+                        if (it.createdBy == "Admin"){
+                            leadsList.remove(it)
+                        }
+                    }
+                }
+
+                //Logic for bifurcating lists according to Sort Option
+                if(selectedOption != ""){
+                    leadsList.forEach {
+                        if(!_leadsList.contains(it)){
+                            _leadsList.add(it)
+                        }
+                    }
+
+                    _leadsList.forEach {
+                        if(it.status != selectedOption){
+                            leadsList.remove(it)
+                        }
+                    }
+                }
+
+                hideLoader()
+            }
+            .addOnFailureListener { exception ->
+                Log.e("TAG", "Error fetching leads: $exception")
+
+                hideLoader()
+            }
+    }
+
+    fun getCurrentUserRole(activity: Activity): String {
+        val sharedPreferences = activity.getSharedPreferences(R.string.app_name.toString(), Context.MODE_PRIVATE)
+        return sharedPreferences.getString("CurrentUserRole", "").toString()
+    }
+
+    fun openDocument(context: Context, documentUrl: String) {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse(documentUrl)
+            context.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            // Handle the case when a suitable app to open the document is not found.
+            // You can show a toast or dialog with an error message.
         }
     }
 }

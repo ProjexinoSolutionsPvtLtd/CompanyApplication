@@ -90,7 +90,6 @@ fun AddDocumentInput(
                 }
             }
 
-
             if (viewModel.selectedDocumentUri != null) {
                 Spacer(modifier = Modifier.height(5.dp))
                 Card(
@@ -122,14 +121,6 @@ fun AddDocumentInput(
                             )
                         )
                     }
-
-//                Text(
-//                    viewModel.selectedDocumentSize.toString(), style = TextStyle(
-//                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-//                        fontSize = 17.sp,
-//                        color = Color.Black
-//                    )
-//                )
                 }
             }
         }
