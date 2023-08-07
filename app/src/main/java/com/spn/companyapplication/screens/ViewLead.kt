@@ -4,12 +4,10 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,18 +16,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
-import com.spn.companyapplication.R
 import com.spn.companyapplication.components.*
-import com.spn.companyapplication.models.Lead
 import com.spn.companyapplication.ui.theme.CompanyApplicationTheme
 import com.spn.companyapplication.viewmodels.ViewLeadViewModel
 
@@ -80,16 +71,18 @@ class ViewLead : ComponentActivity() {
                                         .fillMaxWidth()
                                         .padding(16.dp)
                                 ) {
-                                    SearchBar(hint = "Search Leads")
+                                    SearchBar(hint = "Search Leads", onSearch = {
+                                        viewModel.onSearch(it)
+                                    })
 
-                                    Sort(viewModel = viewModel, activity = this@ViewLead)
+                                    Filter(viewModel = viewModel, activity = this@ViewLead)
 
-                                    Box(modifier = Modifier.fillMaxSize()){
+                                    Box(modifier = Modifier.fillMaxSize()) {
                                         LazyColumn(modifier = Modifier.padding(top = 10.dp)) {
                                             items(viewModel.leadsList) { lead ->
                                                 LeadCard(lead, this@ViewLead, viewModel)
                                             }
-                                            item{
+                                            item {
                                                 Spacer(Modifier.height(50.dp))
                                             }
                                         }

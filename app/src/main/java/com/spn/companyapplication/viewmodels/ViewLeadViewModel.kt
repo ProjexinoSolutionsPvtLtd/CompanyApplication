@@ -5,7 +5,13 @@ import android.content.*
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.text.style.LeadingMarginSpan
+import android.text.Layout
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.AlignmentSpan
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,13 +31,14 @@ import java.io.OutputStream
 
 
 class ViewLeadViewModel(): ViewModel(){
-    val sortOptions = listOf("Opened", "Contacted", "Hold", "Lost/Closed", "Converted")
+    val filterOptions = listOf("Opened", "Contacted", "Hold", "Lost/Closed", "Converted")
     var showOptions by mutableStateOf(false)
     var selectedOption by mutableStateOf("")
 
     var showContent by mutableStateOf(false)
 
-    val leadsList = mutableListOf<Lead>()
+    var leadsList = mutableListOf<Lead>()
+    var completeLeadsList = mutableListOf<Lead>()
 
     @RequiresApi(Build.VERSION_CODES.Q)
     fun exportLeadsToExcel(leads: List<Lead>, contentResolver: ContentResolver) {
@@ -108,6 +115,7 @@ class ViewLeadViewModel(): ViewModel(){
                     val lead = document.toObject(Lead::class.java)
                     lead?.let {
                         leadsList.add(it)
+                        completeLeadsList.add(it)
                     }
                 }
 
@@ -162,8 +170,39 @@ class ViewLeadViewModel(): ViewModel(){
             intent.data = Uri.parse(documentUrl)
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            // Handle the case when a suitable app to open the document is not found.
-            // You can show a toast or dialog with an error message.
+            val toast = "There was no application found to open the document"
+            val centeredText = SpannableString(toast)
+            centeredText.setSpan(
+                AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0, toast.length - 1, Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+            Toast.makeText(context, centeredText, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    fun onSearch(searchQuery: String){
+        showLoader()
+
+        val query = searchQuery.lowercase()
+
+        if(query != "" || query.isNotBlank() || query.isNotEmpty()){
+            val _leadsList = mutableListOf<Lead>()
+            _leadsList.addAll(leadsList)
+
+            leadsList.clear()
+
+            leadsList = _leadsList.filter { lead ->
+                lead.name.lowercase().contains(query) ||
+                        lead.role.lowercase().contains(query) ||
+                        lead.requirement.lowercase().contains(query) ||
+                        lead.status.lowercase().contains(query) ||
+                        lead.organization.lowercase().contains(query)
+            } as MutableList<Lead>
+        }
+        else{
+            leadsList.clear()
+            leadsList.addAll(completeLeadsList)
+        }
+
+        hideLoader()
     }
 }

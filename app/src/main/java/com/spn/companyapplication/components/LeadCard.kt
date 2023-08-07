@@ -154,6 +154,10 @@ fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel) {
 //                    }
 //
 //                    Text(lead.imageUrl)
+//
+//                    val image = rememberImagePainter(data = lead.imageUrl)
+//
+//                    Image(image, contentDescription = "")
 //                }
             }
 

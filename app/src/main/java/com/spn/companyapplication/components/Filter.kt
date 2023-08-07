@@ -22,7 +22,7 @@ import com.spn.companyapplication.viewmodels.HomeViewModel
 import com.spn.companyapplication.viewmodels.ViewLeadViewModel
 
 @Composable
-fun ColumnScope.Sort(viewModel: ViewLeadViewModel, activity: Activity) {
+fun ColumnScope.Filter(viewModel: ViewLeadViewModel, activity: Activity) {
     Box(Modifier.align(Alignment.End)) {
         Icon(
             painter = painterResource(id = R.drawable.ic_baseline_sort_24),
@@ -41,7 +41,7 @@ fun ColumnScope.Sort(viewModel: ViewLeadViewModel, activity: Activity) {
                     viewModel.showOptions = false
                 },
             ) {
-                viewModel.sortOptions.forEach { option ->
+                viewModel.filterOptions.forEach { option ->
                     DropdownMenuItem(onClick = {
                         if(option == viewModel.selectedOption){
                             viewModel.selectedOption = ""
