@@ -32,7 +32,7 @@ import java.io.IOException
 import java.io.OutputStream
 
 
-class ViewLeadViewModel(): ViewModel(){
+class ViewLeadViewModel() : ViewModel() {
     val filterOptions = listOf("Opened", "Contacted", "Hold", "Lost/Closed", "Converted")
     var showOptions by mutableStateOf(false)
     var selectedOption by mutableStateOf("")
@@ -71,7 +71,8 @@ class ViewLeadViewModel(): ViewModel(){
                     val sheet: Sheet = workbook.createSheet("Leads")
 
                     val headerRow: Row = sheet.createRow(0)
-                    val leadProperties = Lead::class.java.declaredFields.filter { it.name != "\$stable" && it.name != "id" }
+                    val leadProperties =
+                        Lead::class.java.declaredFields.filter { it.name != "\$stable" && it.name != "id" }
                     for ((index, property) in leadProperties.withIndex()) {
                         val cell = headerRow.createCell(index)
                         cell.setCellValue(property.name.capitalize())
@@ -104,11 +105,11 @@ class ViewLeadViewModel(): ViewModel(){
         }
     }
 
-    fun hideLoader(){
+    fun hideLoader() {
         showContent = true
     }
 
-    fun showLoader(){
+    fun showLoader() {
         showContent = false
     }
 
@@ -132,28 +133,28 @@ class ViewLeadViewModel(): ViewModel(){
                     Log.d("TAG116", it.name)
                 }
 
-                var _leadsList:  MutableList<Lead> = mutableListOf()
+                var _leadsList: MutableList<Lead> = mutableListOf()
                 _leadsList.addAll(leadsList)
 
                 //Logic for bifurcating lists according to User Type
-                if(getCurrentUserRole(activity) != "Admin"){
+                if (getCurrentUserRole(activity) != "Admin") {
                     _leadsList.forEach {
-                        if (it.createdBy == "Admin"){
+                        if (it.createdBy == "Admin") {
                             leadsList.remove(it)
                         }
                     }
                 }
 
                 //Logic for bifurcating lists according to Sort Option
-                if(selectedOption != ""){
+                if (selectedOption != "") {
                     leadsList.forEach {
-                        if(!_leadsList.contains(it)){
+                        if (!_leadsList.contains(it)) {
                             _leadsList.add(it)
                         }
                     }
 
                     _leadsList.forEach {
-                        if(it.status != selectedOption){
+                        if (it.status != selectedOption) {
                             leadsList.remove(it)
                         }
                     }
@@ -169,7 +170,8 @@ class ViewLeadViewModel(): ViewModel(){
     }
 
     fun getCurrentUserRole(activity: Activity): String {
-        val sharedPreferences = activity.getSharedPreferences(R.string.app_name.toString(), Context.MODE_PRIVATE)
+        val sharedPreferences =
+            activity.getSharedPreferences(R.string.app_name.toString(), Context.MODE_PRIVATE)
         return sharedPreferences.getString("CurrentUserRole", "").toString()
     }
 
@@ -182,32 +184,34 @@ class ViewLeadViewModel(): ViewModel(){
             val toast = "There was no application found to open the document"
             val centeredText = SpannableString(toast)
             centeredText.setSpan(
-                AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0, toast.length - 1, Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
+                0,
+                toast.length - 1,
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
             )
             Toast.makeText(context, centeredText, Toast.LENGTH_SHORT).show()
         }
     }
 
-    fun onSearch(searchQuery: String){
+    fun onSearch(searchQuery: String) {
         showLoader()
 
         val query = searchQuery.lowercase()
 
-        if(query != "" || query.isNotBlank() || query.isNotEmpty()){
+        if (query != "" || query.isNotBlank() || query.isNotEmpty()) {
             val _leadsList = mutableListOf<Lead>()
-            _leadsList.addAll(leadsList)
+            _leadsList.addAll(completeLeadsList)
 
             leadsList.clear()
 
             leadsList = _leadsList.filter { lead ->
                 lead.name.lowercase().contains(query) ||
-                        lead.role.lowercase().contains(query) ||
-                        lead.requirement.lowercase().contains(query) ||
-                        lead.status.lowercase().contains(query) ||
-                        lead.organization.lowercase().contains(query)
+//                        lead.role.lowercase().contains(query) ||
+//                        lead.requirement.lowercase().contains(query) ||
+                        lead.status.lowercase().contains(query)
+//                        lead.organization.lowercase().contains(query)
             } as MutableList<Lead>
-        }
-        else{
+        } else {
             leadsList.clear()
             leadsList.addAll(completeLeadsList)
         }
@@ -215,12 +219,12 @@ class ViewLeadViewModel(): ViewModel(){
         hideLoader()
     }
 
-    fun updateStatus(leadId: String, context: Context){
+    fun updateStatus(leadId: String, context: Context) {
         val firebaseFirestore = FirebaseFirestore.getInstance()
 
 //        Log.d("TAG219", lead.id)
 
-        val leadReference =  firebaseFirestore.collection("leads").document(leadId)
+        val leadReference = firebaseFirestore.collection("leads").document(leadId)
 
         val updates = mapOf(
             "status" to selectedStatusForUpdate
@@ -235,11 +239,11 @@ class ViewLeadViewModel(): ViewModel(){
             }
     }
 
-    fun commentForStatusUpdateChange(text: String){
+    fun commentForStatusUpdateChange(text: String) {
         commentForStatusUpdate = text
     }
 
-    fun clearDialogDetails(){
+    fun clearDialogDetails() {
         showUpdateDialog = false
         selectedStatusForUpdate = "Select Status"
         commentForStatusUpdate = ""

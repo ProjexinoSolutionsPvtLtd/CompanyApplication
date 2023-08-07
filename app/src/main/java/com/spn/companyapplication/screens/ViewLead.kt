@@ -8,14 +8,18 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -25,6 +29,7 @@ import com.spn.companyapplication.ui.theme.CompanyApplicationTheme
 import com.spn.companyapplication.viewmodels.ViewLeadViewModel
 
 class ViewLead : ComponentActivity() {
+    @OptIn(ExperimentalComposeUiApi::class)
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         if (ContextCompat.checkSelfPermission(
@@ -53,6 +58,7 @@ class ViewLead : ComponentActivity() {
         viewModel.fetchLeads(this@ViewLead)
 
         setContent {
+            val keyboardController = LocalSoftwareKeyboardController.current
             val contentResolver = LocalContext.current.contentResolver
             CompanyApplicationTheme {
                 // A surface container using the 'background' color from the theme
@@ -70,6 +76,14 @@ class ViewLead : ComponentActivity() {
                                     Modifier
                                         .fillMaxWidth()
                                         .padding(16.dp)
+                                        .clickable(
+                                            interactionSource = MutableInteractionSource(),
+                                            indication = null,
+                                            onClick = {
+                                                keyboardController?.hide()
+                                            }
+                                        )
+
                                 ) {
                                     SearchBar(hint = "Search Leads", onSearch = {
                                         viewModel.onSearch(it)
