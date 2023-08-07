@@ -98,9 +98,9 @@ class Home : ComponentActivity() {
                                             contentDescription = null,
                                             contentScale = ContentScale.Crop,
                                             modifier = Modifier
-                                                .size(500.dp)
+                                                .size(400.dp)
 //                                                .fillMaxSize()
-                                                .alpha(0.6f),
+                                                .alpha(0.4f),
                                         )
                                     }
                                     Column(
@@ -145,14 +145,14 @@ class Home : ComponentActivity() {
                                     Text(
                                         "Areas of Expertise", style = TextStyle(
                                             fontFamily = FontFamily(Font(R.font.outfit_semibold)),
-                                            fontSize = 15.sp,
+                                            fontSize = 17.sp,
                                             color = Color.Gray
                                         )
                                     )
                                     Text(
                                         "We're good at these areas to work", style = TextStyle(
                                             fontFamily = FontFamily(Font(R.font.outfit_semibold)),
-                                            fontSize = 23.sp,
+                                            fontSize = 26.sp,
                                             color = Color.Black
                                         )
                                     )
@@ -180,20 +180,21 @@ class Home : ComponentActivity() {
                                                     contentDescription = null,
                                                     tint = Color(("#130b5c").toColorInt()),
                                                     modifier = Modifier
-                                                        .size(50.dp)
+                                                        .size(55.dp)
                                                         .clip(RoundedCornerShape(8.dp)),
                                                 )
                                                 Text(
                                                     expertiseItem.title, style = TextStyle(
                                                         fontFamily = FontFamily(Font(R.font.outfit_bold)),
-                                                        fontSize = 18.sp,
+                                                        fontSize = 24.sp,
                                                         color = Color.Black
                                                     )
                                                 )
+                                                Spacer(modifier = Modifier.height(5.dp))
                                                 Text(
                                                     expertiseItem.text, style = TextStyle(
                                                         fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                                                        fontSize = 17.sp,
+                                                        fontSize = 20.sp,
                                                         color = Color.Black
                                                     )
                                                 )
