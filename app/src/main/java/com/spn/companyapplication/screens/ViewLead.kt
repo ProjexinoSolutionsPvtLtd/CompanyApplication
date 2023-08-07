@@ -80,7 +80,7 @@ class ViewLead : ComponentActivity() {
                                     Box(modifier = Modifier.fillMaxSize()) {
                                         LazyColumn(modifier = Modifier.padding(top = 10.dp)) {
                                             items(viewModel.leadsList) { lead ->
-                                                LeadCard(lead, this@ViewLead, viewModel)
+                                                LeadCard(lead, this@ViewLead, viewModel, this@ViewLead)
                                             }
                                             item {
                                                 Spacer(Modifier.height(50.dp))

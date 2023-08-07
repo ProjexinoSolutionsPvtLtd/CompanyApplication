@@ -16,7 +16,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -31,10 +30,11 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import com.spn.companyapplication.R
 import com.spn.companyapplication.components.Button
+import com.spn.companyapplication.components.Dropdown
 import com.spn.companyapplication.components.TextInput
 import com.spn.companyapplication.ui.theme.CompanyApplicationTheme
 import com.spn.companyapplication.viewmodels.RegisterViewModel
-import com.google.firebase.auth.FirebaseAuth
+import com.spn.companyapplication.components.DropdownMenu
 
 //import com.google.firebase.firestore.FirebaseFirestore
 
@@ -93,70 +93,12 @@ class Register : ComponentActivity() {
                             value = viewModel.name,
                             onChange = { viewModel.nameChange(it) })
                         Spacer(Modifier.height(15.dp))
-                        Card(
-                            elevation = 0.dp,
-                            border = BorderStroke(
-                                1.dp, Color(("#9f9f9f").toColorInt())
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .heightIn(min = 55.dp)
-                                .clickable {
-                                    viewModel.showRoleOptions = true
-                                }) {
-                            Column(
-                                Modifier
-                                    .padding(
-                                        horizontal = 13.dp,
-                                        vertical = 8.dp
-                                    )
-                                    .fillMaxSize(), verticalArrangement = Arrangement.Center
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxSize(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        viewModel.role,
-                                        style = TextStyle(
-                                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                                            fontSize = 17.sp,
-                                            color = Color.Black
-                                        )
-                                    )
-
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_arrow_down),
-                                        contentDescription = "",
-                                        modifier = Modifier
-                                            .size(20.dp)
-                                            .rotate(rotationState)
-                                    )
-                                }
-                                if (viewModel.showRoleOptions) {
-                                    DropdownMenu(
-                                        expanded = viewModel.showRoleOptions,
-                                        onDismissRequest = { viewModel.showRoleOptions = false },
-                                    ) {
-                                        viewModel.roleOptions.forEach { option ->
-                                            DropdownMenuItem(onClick = {
-                                                viewModel.role = option
-                                                viewModel.showRoleOptions = false
-                                            }) {
-                                                Text(
-                                                    text = option, style = TextStyle(
-                                                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                                                        fontSize = 16.sp,
-                                                        color = Color.Black
-                                                    )
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        Dropdown(
+                            onDropdownMenuChange = { viewModel.showRoleOptions = true },
+                            hint = viewModel.role,
+                            rotationState = rotationState,
+                            registerViewModel = viewModel
+                        )
                         Spacer(Modifier.height(15.dp))
                         TextInput(
                             label = "Email",

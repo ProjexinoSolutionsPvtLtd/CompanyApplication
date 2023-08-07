@@ -1,6 +1,8 @@
 package com.spn.companyapplication.components
 
+import android.app.Activity
 import android.content.Context
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -36,9 +38,20 @@ import com.spn.companyapplication.models.Lead
 import com.spn.companyapplication.viewmodels.ViewLeadViewModel
 
 @Composable
-fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel) {
+fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel, activity: Activity) {
     var isExpanded by remember { mutableStateOf(false) }
     val rotationState by animateFloatAsState(targetValue = if (isExpanded) 180f else 0f)
+
+    if(viewModel.showUpdateDialog){
+        StatusUpdateDialog(
+            showDialog = viewModel.showUpdateDialog,
+            onDismiss = { viewModel.showUpdateDialog = false },
+            viewModel = viewModel,
+            context = context,
+            activity = activity
+        )
+    }
+
     Card(
         elevation = 5.dp, modifier = Modifier
             .padding(vertical = 10.dp)
@@ -65,6 +78,14 @@ fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel) {
                 Modifier
                     .clip(RoundedCornerShape(15.dp))
                     .background(Color(("#103b5c").toColorInt()).copy(0.5f))
+                    .clickable(
+                        interactionSource = MutableInteractionSource(),
+                        indication = null,
+                        onClick = {
+                            viewModel.currentLeadId = lead.id
+                            viewModel.showUpdateDialog = true
+                        }
+                    )
             ) {
                 Text(
                     lead.status, style = TextStyle(
@@ -72,7 +93,8 @@ fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel) {
                         fontSize = 14.sp,
                         color = Color.DarkGray
                     ),
-                    modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 5.dp, vertical = 2.dp)
                 )
             }
 
@@ -144,6 +166,7 @@ fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel) {
                         )
                         Spacer(modifier = Modifier.height(5.dp))
                         DocumentCard(lead.documentName, lead.documentType)
+                        Spacer(modifier = Modifier.height(5.dp))
                     }
                 }
 

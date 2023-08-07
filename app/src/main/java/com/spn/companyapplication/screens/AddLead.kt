@@ -115,7 +115,7 @@ class AddLead : ComponentActivity() {
                                     value = viewModel.dateTimeValue,
                                     label = "Date/Time",
                                     selectedDate = viewModel.dateTime,
-                                    onSelect = { viewModel.onDateTimeSelect(it) }
+                                    onSelect = { viewModel.onDateTimeSelect(it, this@AddLead) }
                                 )
                                 Spacer(Modifier.height(10.dp))
                                 AddDocumentInput(viewModel, LocalContext.current.contentResolver)
@@ -134,7 +134,8 @@ class AddLead : ComponentActivity() {
 //                                        )
                                     },
                                     color = Color(("#130b5c").toColorInt()),
-                                    uppercase = false
+                                    uppercase = false,
+                                    showLoader = viewModel.showButtonLoader
                                 )
                             }
                         })

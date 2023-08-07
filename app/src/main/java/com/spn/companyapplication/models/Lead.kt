@@ -3,6 +3,7 @@ package com.spn.companyapplication.models
 import androidx.compose.ui.graphics.vector.ImageVector
 
 data class Lead(
+    val id: String = "",
     val name: String = "",
     val role: String = "",
     val number: String = "",

@@ -18,8 +18,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.capitalize
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.spn.companyapplication.R
 import com.spn.companyapplication.models.Lead
 import org.apache.poi.ss.usermodel.Row
@@ -35,7 +37,14 @@ class ViewLeadViewModel(): ViewModel(){
     var showOptions by mutableStateOf(false)
     var selectedOption by mutableStateOf("")
 
+    var currentLeadId by mutableStateOf("")
+    var selectedStatusForUpdate by mutableStateOf("Select Status")
+    var commentForStatusUpdate by mutableStateOf("")
+    var showStatusUpdateOptions by mutableStateOf(false)
+
     var showContent by mutableStateOf(false)
+
+    var showUpdateDialog by mutableStateOf(false)
 
     var leadsList = mutableListOf<Lead>()
     var completeLeadsList = mutableListOf<Lead>()
@@ -204,5 +213,35 @@ class ViewLeadViewModel(): ViewModel(){
         }
 
         hideLoader()
+    }
+
+    fun updateStatus(leadId: String, context: Context){
+        val firebaseFirestore = FirebaseFirestore.getInstance()
+
+//        Log.d("TAG219", lead.id)
+
+        val leadReference =  firebaseFirestore.collection("leads").document(leadId)
+
+        val updates = mapOf(
+            "status" to selectedStatusForUpdate
+        )
+
+        leadReference.update(updates)
+            .addOnSuccessListener {
+//                Toast.makeText(context, "Status Updated", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+
+            }
+    }
+
+    fun commentForStatusUpdateChange(text: String){
+        commentForStatusUpdate = text
+    }
+
+    fun clearDialogDetails(){
+        showUpdateDialog = false
+        selectedStatusForUpdate = "Select Status"
+        commentForStatusUpdate = ""
     }
 }

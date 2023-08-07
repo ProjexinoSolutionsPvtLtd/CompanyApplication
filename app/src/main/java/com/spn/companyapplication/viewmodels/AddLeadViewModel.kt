@@ -1,15 +1,20 @@
 package com.spn.companyapplication.viewmodels
 
 import android.app.Activity
+import android.text.Layout
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.AlignmentSpan
+import android.widget.Toast
 import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
 import android.provider.OpenableColumns
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,13 +26,14 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.spn.companyapplication.R
 import com.spn.companyapplication.models.Lead
+import com.spn.companyapplication.screens.Home
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
 class AddLeadViewModel() : ViewModel() {
-    private val dateTimeFormat = SimpleDateFormat("HH:mm dd-MMM-yyyy")
+    private val dateTimeFormat = SimpleDateFormat("HH:mm, dd-MMM-yyyy")
 
     var dateTimeValue by mutableStateOf("")
     var dateTime: Calendar by mutableStateOf(Calendar.getInstance())
@@ -49,6 +55,8 @@ class AddLeadViewModel() : ViewModel() {
     var showImage by mutableStateOf(false)
 
     var validate by mutableStateOf(false)
+
+    var showButtonLoader by mutableStateOf(false)
 
     var imageUrl = ""
     var documentUrl = ""
@@ -85,9 +93,20 @@ class AddLeadViewModel() : ViewModel() {
         requirement = text
     }
 
-    fun onDateTimeSelect(time: Calendar) {
+    fun onDateTimeSelect(time: Calendar, context: Context) {
         dateTime = time
-        dateTimeValue = dateTimeFormat.format(time.time)
+        val currentDate = Calendar.getInstance()
+        if (!time.before(currentDate)) {
+            dateTimeValue = dateTimeFormat.format(time.time)
+        }
+        else{
+            val toast = "Date/Time cannot be set to a date earlier than the current one"
+            val centeredText = SpannableString(toast)
+            centeredText.setSpan(
+                AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0, toast.length - 1, Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+            Toast.makeText(context, centeredText, Toast.LENGTH_SHORT).show()
+        }
     }
 
     fun getDocumentName(contentResolver: ContentResolver, uri: Uri): String? {
@@ -150,6 +169,7 @@ class AddLeadViewModel() : ViewModel() {
     }
 
     fun uploadLead(context: Context, activity: Activity) {
+        showButtonLoader = true
         if (capturedBitmap != null) {
             imageUpload(context, activity)
         }
@@ -231,7 +251,11 @@ class AddLeadViewModel() : ViewModel() {
         )
 
         firebaseFirestore.collection("leads").add(lead).addOnSuccessListener {
-            Toast.makeText(context, "Lead Added Successfully", Toast.LENGTH_SHORT).show()
+            val leadId = mapOf("id" to it.id)
+            firebaseFirestore.collection("leads").document(it.id).update(leadId).addOnSuccessListener {
+                Toast.makeText(context, "Lead Added Successfully", Toast.LENGTH_SHORT).show()
+                activity.startActivity(Intent(activity, Home::class.java))
+            }
         }.addOnFailureListener { e ->
             Log.d("TAG225", e.toString())
         }
