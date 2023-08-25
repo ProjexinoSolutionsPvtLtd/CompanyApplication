@@ -5,12 +5,11 @@ import android.content.*
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.text.style.LeadingMarginSpan
+import android.util.Log
 import android.text.Layout
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.AlignmentSpan
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
@@ -30,12 +29,20 @@ import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.IOException
 import java.io.OutputStream
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class ViewLeadViewModel() : ViewModel() {
     val filterOptions = listOf("Opened", "Contacted", "Hold", "Lost/Closed", "Converted")
+    val dateSortOptions = listOf("Ascending", "Descending")
     var showOptions by mutableStateOf(false)
+
+    var ascending by mutableStateOf(false)
+    var showDateSortOptions by mutableStateOf(false)
+
     var selectedOption by mutableStateOf("")
+    var dateSortSelectedOption by mutableStateOf("")
 
     var currentLeadId by mutableStateOf("")
     var selectedStatusForUpdate by mutableStateOf("Select Status")
@@ -50,7 +57,7 @@ class ViewLeadViewModel() : ViewModel() {
     var completeLeadsList = mutableListOf<Lead>()
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    fun exportLeadsToExcel(leads: List<Lead>, contentResolver: ContentResolver) {
+    fun exportLeadsToExcel(leads: List<Lead>, contentResolver: ContentResolver, activity: Activity) {
         val fileName = "Leads.xlsx"
         val contentValues = ContentValues()
         contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
@@ -72,7 +79,7 @@ class ViewLeadViewModel() : ViewModel() {
 
                     val headerRow: Row = sheet.createRow(0)
                     val leadProperties =
-                        Lead::class.java.declaredFields.filter { it.name != "\$stable" && it.name != "id" }
+                        Lead::class.java.declaredFields.filter { it.name != "\$stable" && it.name != "id" && it.name != "documentUrl" && it.name != "documentName" && it.name != "documentType" && it.name != "imageUrl"}
                     for ((index, property) in leadProperties.withIndex()) {
                         val cell = headerRow.createCell(index)
                         cell.setCellValue(property.name.capitalize())
@@ -100,6 +107,13 @@ class ViewLeadViewModel() : ViewModel() {
                     Log.d("TAG61", "Excel file created successfully.")
                 }
             }
+
+            val toast = "Leads data downloaded successfully"
+            val centeredText = SpannableString(toast)
+            centeredText.setSpan(
+                AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0, toast.length - 1, Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+            Toast.makeText(activity, centeredText, Toast.LENGTH_SHORT).show()
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -111,6 +125,18 @@ class ViewLeadViewModel() : ViewModel() {
 
     fun showLoader() {
         showContent = false
+    }
+
+    fun onStatusFilterDropdownOptionSelect(text: String){
+        selectedOption = text
+    }
+
+    fun onDateSortDropdownOptionSelect(text: String){
+        dateSortSelectedOption = text
+    }
+
+    fun onStatusUpdateDropdownOptionSelect(text: String){
+        selectedStatusForUpdate = text
     }
 
     fun fetchLeads(activity: Activity) {
@@ -192,7 +218,24 @@ class ViewLeadViewModel() : ViewModel() {
             Toast.makeText(context, centeredText, Toast.LENGTH_SHORT).show()
         }
     }
+    fun sortLeadsByDate(leads: List<Lead>): List<Lead> {
+        val dateFormat = SimpleDateFormat("HH:mm dd-MMM-yyyy", Locale.getDefault())
 
+        val sortedLeads = if (ascending) {
+            leads.sortedBy { lead -> dateFormat.parse(lead.dateTimeValue) ?: Date() }
+        } else {
+            leads.sortedByDescending { lead -> dateFormat.parse(lead.dateTimeValue) ?: Date() }
+        }
+
+        showLoader()
+
+        leadsList.clear()
+        leadsList.addAll(sortedLeads)
+
+        hideLoader()
+
+        return sortedLeads
+    }
     fun onSearch(searchQuery: String) {
         showLoader()
 

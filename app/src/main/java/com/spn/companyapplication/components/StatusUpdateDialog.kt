@@ -60,10 +60,13 @@ fun StatusUpdateDialog(
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     Dropdown(
-                        onDropdownMenuChange = { viewModel.showStatusUpdateOptions = true },
+                        onDropdownMenuChange = { viewModel.showStatusUpdateOptions =  !viewModel.showStatusUpdateOptions},
                         hint = viewModel.selectedStatusForUpdate,
                         rotationState = rotationState,
-                        viewLeadViewModel = viewModel
+                        showOptions = viewModel.showStatusUpdateOptions,
+                        onDismiss = { viewModel.showStatusUpdateOptions = false },
+                        onSelected = { viewModel.onStatusUpdateDropdownOptionSelect(it) },
+                        options = viewModel.dateSortOptions
                     )
                     TextInput(
                         label = "Comments",

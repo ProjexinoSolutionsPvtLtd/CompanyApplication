@@ -11,10 +11,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -34,7 +32,6 @@ import com.spn.companyapplication.components.Dropdown
 import com.spn.companyapplication.components.TextInput
 import com.spn.companyapplication.ui.theme.CompanyApplicationTheme
 import com.spn.companyapplication.viewmodels.RegisterViewModel
-import com.spn.companyapplication.components.DropdownMenu
 
 //import com.google.firebase.firestore.FirebaseFirestore
 
@@ -94,10 +91,13 @@ class Register : ComponentActivity() {
                             onChange = { viewModel.nameChange(it) })
                         Spacer(Modifier.height(15.dp))
                         Dropdown(
-                            onDropdownMenuChange = { viewModel.showRoleOptions = true },
+                            onDropdownMenuChange = { viewModel.showRoleOptions = !viewModel.showRoleOptions },
+                            onDismiss = { viewModel.showRoleOptions = false },
+                            showOptions = viewModel.showRoleOptions,
+                            onSelected = { viewModel.onRoleDropdownOptionSelect(it) },
                             hint = viewModel.role,
                             rotationState = rotationState,
-                            registerViewModel = viewModel
+                            options = viewModel.roleOptions
                         )
                         Spacer(Modifier.height(15.dp))
                         TextInput(

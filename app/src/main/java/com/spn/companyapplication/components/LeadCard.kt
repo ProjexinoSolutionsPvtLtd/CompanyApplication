@@ -12,22 +12,23 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
@@ -42,7 +43,7 @@ fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel, activit
     var isExpanded by remember { mutableStateOf(false) }
     val rotationState by animateFloatAsState(targetValue = if (isExpanded) 180f else 0f)
 
-    if(viewModel.showUpdateDialog){
+    if (viewModel.showUpdateDialog) {
         StatusUpdateDialog(
             showDialog = viewModel.showUpdateDialog,
             onDismiss = { viewModel.showUpdateDialog = false },
@@ -58,55 +59,71 @@ fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel, activit
             .fillMaxWidth()
     ) {
         Column(Modifier.padding(12.dp)) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    lead.name, style = TextStyle(
-                        fontFamily = FontFamily(Font(R.font.outfit_semibold)),
-                        fontSize = 19.sp,
-                        color = Color.Black
-                    )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                InitialsIcon(
+                    name = lead.name,
+                    backgroundColor = Color.LightGray,
+                    contentColor = Color.DarkGray
                 )
-            }
 
-            Spacer(Modifier.height(5.dp))
+                Spacer(modifier = Modifier.width(15.dp))
 
-            Box(
-                Modifier
-                    .clip(RoundedCornerShape(15.dp))
-                    .background(Color(("#103b5c").toColorInt()).copy(0.5f))
-                    .clickable(
-                        interactionSource = MutableInteractionSource(),
-                        indication = null,
-                        onClick = {
-                            viewModel.currentLeadId = lead.id
-                            viewModel.showUpdateDialog = true
-                        }
+                Column {
+                    Text(
+                        lead.name, style = TextStyle(
+                            fontFamily = FontFamily(Font(R.font.outfit_semibold)),
+                            fontSize = 19.sp,
+                            color = Color.Black
+                        )
                     )
-            ) {
-                Text(
-                    lead.status, style = TextStyle(
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        fontSize = 14.sp,
-                        color = Color.DarkGray
-                    ),
-                    modifier = Modifier
-                        .padding(horizontal = 5.dp, vertical = 2.dp)
-                )
+//            }
+
+                    Spacer(Modifier.height(5.dp))
+
+                    Box(
+                        Modifier
+                            .clip(RoundedCornerShape(15.dp))
+                            .background(Color(("#103b5c").toColorInt()).copy(0.5f))
+                            .clickable(
+                                interactionSource = MutableInteractionSource(),
+                                indication = null,
+                                onClick = {
+                                    viewModel.currentLeadId = lead.id
+                                    viewModel.showUpdateDialog = true
+                                }
+                            )
+                    ) {
+                        Text(
+                            lead.status, style = TextStyle(
+                                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                fontSize = 14.sp,
+                                color = Color.DarkGray
+                            ),
+                            modifier = Modifier
+                                .padding(horizontal = 5.dp, vertical = 2.dp)
+                        )
+                    }
+
+                    Spacer(Modifier.height(5.dp))
+
+                    iconWithText(icon = R.drawable.ic_number, text = lead.number)
+
+                    Spacer(Modifier.height(5.dp))
+                }
             }
-
-            Spacer(Modifier.height(5.dp))
-
-            iconWithText(icon = R.drawable.ic_number, text = lead.number)
-            iconWithText(icon = R.drawable.ic_mail, text = lead.email)
-
-            Spacer(Modifier.height(10.dp))
 
             if (isExpanded) {
+                Spacer(Modifier.height(10.dp))
                 Divider(color = Color.LightGray.copy(0.7f))
+//                iconWithText(icon = R.drawable.ic_mail, text = lead.email)
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp)
+                ) {
+                    headingWithValue(heading = "Email", value = lead.email, weight = 1f)
+                }
+
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -232,6 +249,50 @@ fun iconWithText(icon: Int, text: String) {
             )
         )
     }
+}
+
+@Composable
+fun InitialsIcon(
+    name: String,
+    backgroundColor: Color,
+    contentColor: Color,
+    size: Int = 80,
+    icon: ImageVector? = null,
+) {
+    Surface(
+        modifier = Modifier.size(size.dp),
+        shape = CircleShape,
+        color = backgroundColor,
+        contentColor = contentColor,
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (icon != null) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = contentColor,
+                )
+            } else {
+                Text(
+                    text = getInitials(name),
+                    style = TextStyle(
+                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                        fontSize = 40.sp,
+                        color = contentColor
+                    )
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun getInitials(name: String): String {
+    val initials = name.split(" ").joinToString("") { it.take(1) }
+    return initials.take(2).toUpperCase()
 }
 
 @Composable

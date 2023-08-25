@@ -72,48 +72,45 @@ class ViewLead : ComponentActivity() {
                         activity = this@ViewLead,
                         content = {
                             if (viewModel.showContent) {
-                                Column(
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp)
-                                        .clickable(
-                                            interactionSource = MutableInteractionSource(),
-                                            indication = null,
-                                            onClick = {
-                                                keyboardController?.hide()
-                                            }
-                                        )
+                                Box(Modifier.fillMaxSize()) {
+                                    Column(
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp)
+                                            .clickable(
+                                                interactionSource = MutableInteractionSource(),
+                                                indication = null,
+                                                onClick = {
+                                                    keyboardController?.hide()
+                                                }
+                                            )
 
-                                ) {
-                                    SearchBar(hint = "Search Leads", onSearch = {
-                                        viewModel.onSearch(it)
-                                    })
+                                    ) {
+                                        SearchBar(hint = "Search Leads", onSearch = {
+                                            viewModel.onSearch(it)
+                                        })
 
-                                    Filter(viewModel = viewModel, activity = this@ViewLead)
-
-                                    Box(modifier = Modifier.fillMaxSize()) {
-                                        LazyColumn(modifier = Modifier.padding(top = 10.dp)) {
-                                            items(viewModel.leadsList) { lead ->
-                                                LeadCard(lead, this@ViewLead, viewModel, this@ViewLead)
-                                            }
-                                            item {
-                                                Spacer(Modifier.height(50.dp))
+                                        Box(modifier = Modifier.fillMaxSize()) {
+                                            LazyColumn(modifier = Modifier.padding(top = 10.dp)) {
+                                                items(viewModel.leadsList) { lead ->
+                                                    LeadCard(
+                                                        lead,
+                                                        this@ViewLead,
+                                                        viewModel,
+                                                        this@ViewLead
+                                                    )
+                                                }
+                                                item {
+                                                    Spacer(Modifier.height(50.dp))
+                                                }
                                             }
                                         }
-                                        com.spn.companyapplication.components.Button(
-                                            modifier = Modifier.align(Alignment.BottomCenter),
-                                            text = "Download Leads",
-                                            onClick = {
-                                                viewModel.exportLeadsToExcel(
-                                                    viewModel.leadsList,
-                                                    contentResolver
-                                                )
-                                            },
-                                            color = Color(("#130b5c").toColorInt()),
-                                            uppercase = false,
-                                            padding = 4.dp
-                                        )
                                     }
+                                    Filter(
+                                        viewModel = viewModel,
+                                        activity = this@ViewLead,
+                                        contentResolver
+                                    )
                                 }
                             } else {
                                 Loading()

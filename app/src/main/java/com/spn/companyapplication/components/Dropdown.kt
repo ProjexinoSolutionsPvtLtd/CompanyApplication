@@ -26,10 +26,13 @@ import com.spn.companyapplication.viewmodels.ViewLeadViewModel
 @Composable
 fun Dropdown(
     onDropdownMenuChange: () -> Unit,
+//    onClickActions: Map<String, () -> Unit>,
+    showOptions: Boolean,
+    onDismiss: () -> Unit,
+    onSelected: (String) -> Unit,
+    options: List<String>,
     hint: String,
-    rotationState: Float,
-    viewLeadViewModel: ViewLeadViewModel? = null,
-    registerViewModel: RegisterViewModel? = null
+    rotationState: Float
 ) {
     Card(
         elevation = 0.dp,
@@ -71,21 +74,13 @@ fun Dropdown(
                         .rotate(rotationState)
                 )
             }
-            if (viewLeadViewModel != null && viewLeadViewModel.showStatusUpdateOptions) {
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomEnd){
                 DropdownMenu(
-                    showOptions = viewLeadViewModel.showStatusUpdateOptions,
-                    onDismiss = { viewLeadViewModel.showStatusUpdateOptions = false },
-                    options = viewLeadViewModel.filterOptions,
-                    viewLeadViewModel = viewLeadViewModel,
-                    isStatusUpdate = true
-                )
-            }
-            if (registerViewModel != null && registerViewModel.showRoleOptions) {
-                DropdownMenu(
-                    showOptions = registerViewModel.showRoleOptions,
-                    onDismiss = { registerViewModel.showRoleOptions = false },
-                    options = registerViewModel.roleOptions,
-                    registerViewModel = registerViewModel
+                    showOptions = showOptions,
+                    onDismiss = { onDismiss.invoke() },
+                    options = options,
+                    isStatusUpdate = true,
+                    onSelected = onSelected,
                 )
             }
         }

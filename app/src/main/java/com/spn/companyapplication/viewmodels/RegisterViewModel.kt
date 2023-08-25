@@ -55,6 +55,10 @@ class RegisterViewModel(): ViewModel(){
         name = text
     }
 
+    fun onRoleDropdownOptionSelect(text: String){
+        role = text
+    }
+
     fun registerUser(activity: Activity){
         showLoader = true
         firebaseAuth.createUserWithEmailAndPassword(email, password)
