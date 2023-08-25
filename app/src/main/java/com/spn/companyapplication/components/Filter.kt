@@ -46,7 +46,8 @@ fun BoxScope.Filter(
             horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 11.dp, vertical = 9.dp)) {
+                .padding(horizontal = 11.dp, vertical = 9.dp)
+        ) {
             IconWithText(icon = R.drawable.ic_download, text = "Download") {
                 viewModel.exportLeadsToExcel(
                     viewModel.leadsList,
@@ -55,20 +56,24 @@ fun BoxScope.Filter(
                 )
             } //Download Leads
 
-            Spacer(modifier = Modifier
-                .height(25.dp)
-                .width(1.dp)
-                .background(Color.LightGray))
+            Spacer(
+                modifier = Modifier
+                    .height(25.dp)
+                    .width(1.dp)
+                    .background(Color.LightGray)
+            )
 
             IconWithText(
                 icon = R.drawable.ic_baseline_sort_24,
                 text = "Sort"
             ) { viewModel.showDateSortOptions = true } //Sort by Date
 
-            Spacer(modifier = Modifier
-                .height(25.dp)
-                .width(1.dp)
-                .background(Color.LightGray))
+            Spacer(
+                modifier = Modifier
+                    .height(25.dp)
+                    .width(1.dp)
+                    .background(Color.LightGray)
+            )
 
             IconWithText(icon = R.drawable.ic_filter, text = "Filter") {
                 viewModel.showOptions = true
@@ -101,25 +106,38 @@ fun BoxScope.Filter(
         val configuration = LocalConfiguration.current
         val screenWidthDp = configuration.screenWidthDp.dp
         if (viewModel.showOptions) {
-            Box(modifier = Modifier.offset(x = (screenWidthDp - 20.dp))){
+            Box(modifier = Modifier.offset(x = (screenWidthDp - 125.dp))) {
                 DropdownMenu(
                     showOptions = viewModel.showOptions,
                     onDismiss = { viewModel.showOptions = false },
                     options = viewModel.filterOptions,
-                    activity = activity,
-                    onSelected = { viewModel.onStatusFilterDropdownOptionSelect(it) }
+                    onSelected = { viewModel.onStatusFilterDropdownOptionSelect(it) },
+                    onClickMap = mapOf(
+                        Pair("Opened") { viewModel.fetchLeads(activity) },
+                        Pair("Contacted") { viewModel.fetchLeads(activity) },
+                        Pair("Hold") { viewModel.fetchLeads(activity) },
+                        Pair("Lost/Closed") { viewModel.fetchLeads(activity) },
+                        Pair("Converted") { viewModel.fetchLeads(activity) },
+                        Pair("") { viewModel.fetchLeads(activity) },
+                    ),
+                    getSelectedOption = { viewModel.getStatusFilterSelectedOption() }
                 )
             }
         }
 
         if (viewModel.showDateSortOptions) {
-            Box(modifier = Modifier.offset(x = screenWidthDp.times(0.38f))){
+            Box(modifier = Modifier.offset(x = screenWidthDp.times(0.38f))) {
                 DropdownMenu(
                     showOptions = viewModel.showDateSortOptions,
                     onDismiss = { viewModel.showDateSortOptions = false },
                     options = viewModel.dateSortOptions,
-                    activity = activity,
-                    onSelected = { viewModel.onDateSortDropdownOptionSelect(it) }
+                    onSelected = { viewModel.onDateSortDropdownOptionSelect(it) },
+                    onClickMap = mapOf(
+                        Pair("Ascending") { viewModel.sortLeadsByDate() },
+                        Pair("Descending") { viewModel.sortLeadsByDate() },
+                        Pair("") { viewModel.fetchLeads(activity) },
+                    ),
+                    getSelectedOption = { viewModel.getDateSortTypeSelectedOption() }
                 )
             }
         }
@@ -129,7 +147,8 @@ fun BoxScope.Filter(
 
 @Composable
 fun IconWithText(icon: Int, text: String, onClick: () -> Unit) {
-    Row(Modifier.padding(horizontal = 10.dp)
+    Row(Modifier
+        .padding(horizontal = 10.dp)
         .clickable(
             interactionSource = MutableInteractionSource(),
             indication = null,

@@ -66,7 +66,7 @@ fun StatusUpdateDialog(
                         showOptions = viewModel.showStatusUpdateOptions,
                         onDismiss = { viewModel.showStatusUpdateOptions = false },
                         onSelected = { viewModel.onStatusUpdateDropdownOptionSelect(it) },
-                        options = viewModel.dateSortOptions
+                        options = viewModel.filterOptions
                     )
                     TextInput(
                         label = "Comments",

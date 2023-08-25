@@ -1,6 +1,7 @@
 package com.spn.companyapplication.components
 
 import android.app.Activity
+import android.util.Log
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,16 +26,15 @@ import com.spn.companyapplication.viewmodels.ViewLeadViewModel
 import org.apache.poi.ss.formula.functions.Column
 
 @Composable
-fun BoxScope.DropdownMenu(
+fun DropdownMenu(
     showOptions: Boolean,
     onDismiss: () -> Unit,
     options: List<String>,
     onSelected: (String) -> Unit,
-//    onClickMap: Map<String, () -> Unit>,
-    activity: Activity? = null,
-    isStatusUpdate: Boolean = false
+    onClickMap: Map<String, () -> Unit>,
+    getSelectedOption: (() -> String)? = null
 ) {
-    val width = LocalContext
+    val value = if(getSelectedOption != null) getSelectedOption.invoke() else ""
     DropdownMenu(
         expanded = showOptions,
         onDismissRequest = {
@@ -46,14 +46,14 @@ fun BoxScope.DropdownMenu(
                 onSelected.invoke(option)
                 onDismiss.invoke()
 
-//                if (viewLeadViewModel != null && isStatusUpdate) {
-//                    viewLeadViewModel.selectedStatusForUpdate = option
-//                    viewLeadViewModel.showStatusUpdateOptions = false
-//                } else
-//                if (option == viewLeadViewModel.selectedOption) {
-//                    viewLeadViewModel.selectedOption = ""
-//                }
-//                    viewLeadViewModel.fetchLeads(activity!!)
+                if (option == value) {
+                    onSelected.invoke("")
+                    onClickMap[value]!!.invoke()
+                }
+
+                if (onClickMap.containsKey(option)) {
+                    onClickMap[option]!!.invoke()
+                }
             }) {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
@@ -62,10 +62,10 @@ fun BoxScope.DropdownMenu(
                         fontFamily = FontFamily(
                             Font(
 //                                if (viewLeadViewModel != null && !isStatusUpdate) {
-//                                    if (option != viewLeadViewModel.selectedOption) R.font.outfit_regular else R.font.outfit_medium
+                                    if (option != value) R.font.outfit_regular else R.font.outfit_medium
 //                                } else {
-                                    R.font.outfit_regular
-//                                }
+//                                R.font.outfit_regular
+
                             )
                         ),
                         fontSize = 16.sp,

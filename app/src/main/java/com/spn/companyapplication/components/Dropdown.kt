@@ -79,8 +79,9 @@ fun Dropdown(
                     showOptions = showOptions,
                     onDismiss = { onDismiss.invoke() },
                     options = options,
-                    isStatusUpdate = true,
                     onSelected = onSelected,
+                    onClickMap = mapOf(),
+//                    getSelectedOption = {  }
                 )
             }
         }

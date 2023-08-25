@@ -171,7 +171,7 @@ class ViewLeadViewModel() : ViewModel() {
                     }
                 }
 
-                //Logic for bifurcating lists according to Sort Option
+                //Logic for bifurcating lists according to Status Filter Option
                 if (selectedOption != "") {
                     leadsList.forEach {
                         if (!_leadsList.contains(it)) {
@@ -193,6 +193,14 @@ class ViewLeadViewModel() : ViewModel() {
 
                 hideLoader()
             }
+    }
+
+    fun getStatusFilterSelectedOption(): String{
+        return selectedOption
+    }
+
+    fun getDateSortTypeSelectedOption(): String{
+        return dateSortSelectedOption
     }
 
     fun getCurrentUserRole(activity: Activity): String {
@@ -218,13 +226,13 @@ class ViewLeadViewModel() : ViewModel() {
             Toast.makeText(context, centeredText, Toast.LENGTH_SHORT).show()
         }
     }
-    fun sortLeadsByDate(leads: List<Lead>): List<Lead> {
-        val dateFormat = SimpleDateFormat("HH:mm dd-MMM-yyyy", Locale.getDefault())
+    fun sortLeadsByDate(): List<Lead> {
+        val dateFormat = SimpleDateFormat("HH:mm, dd-MMM-yyyy", Locale.getDefault())
 
-        val sortedLeads = if (ascending) {
-            leads.sortedBy { lead -> dateFormat.parse(lead.dateTimeValue) ?: Date() }
+        val sortedLeads = if (dateSortSelectedOption == "Ascending") {
+            completeLeadsList.sortedBy { lead -> dateFormat.parse(lead.dateTimeValue) ?: Date() }
         } else {
-            leads.sortedByDescending { lead -> dateFormat.parse(lead.dateTimeValue) ?: Date() }
+            completeLeadsList.sortedByDescending { lead -> dateFormat.parse(lead.dateTimeValue) ?: Date() }
         }
 
         showLoader()
