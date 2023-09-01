@@ -17,6 +17,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
@@ -34,6 +35,7 @@ fun TextInput(
     onChange: (String) -> Unit,
     imeAction: ImeAction = ImeAction.Next,
     isPassword: Boolean = false,
+    keyboardType: KeyboardType = KeyboardType.Text,
     enabled: Boolean = true,
     fontSize: TextUnit? = null,
     height: Dp? = null,
@@ -67,7 +69,11 @@ fun TextInput(
             color = Color.Black
         ),
         maxLines = 4,
-        keyboardOptions = KeyboardOptions(imeAction = imeAction),
+        keyboardOptions = KeyboardOptions(imeAction = imeAction).also {
+            KeyboardOptions.Default.copy(
+                keyboardType = keyboardType
+            )
+        },
         keyboardActions = KeyboardActions(
             onDone = { focusManager.clearFocus() }
         ),

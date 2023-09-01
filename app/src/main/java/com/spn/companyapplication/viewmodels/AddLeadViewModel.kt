@@ -487,7 +487,12 @@ class AddLeadViewModel() : ViewModel() {
 
     fun validation() {
         validate =
-            !(name == "" || organization == "" || role == "" || number == "" || email == "" || address == "" || requirement == "" || dateTimeValue == "")
+            !(name == "" || organization == "" || role == "" || number == "" || email == "" || !isValidEmail(email) || address == "" || requirement == "" || dateTimeValue == "")
+    }
+
+    fun isValidEmail(email: String): Boolean {
+        val emailRegex = Regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$")
+        return emailRegex.matches(email)
     }
 
     fun formatCountryCode(countryCode: String): String {

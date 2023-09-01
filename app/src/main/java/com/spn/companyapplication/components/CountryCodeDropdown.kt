@@ -1,6 +1,7 @@
 package com.spn.companyapplication.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -11,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.spn.companyapplication.R
@@ -31,6 +33,9 @@ fun CountryCodeDropdown(
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                 fontSize = 17.sp,
                 color = Color.Black
+            ),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number
             ),
             label = {
                 Text(

@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
@@ -95,7 +96,9 @@ class AddLead : ComponentActivity() {
                                 TextInput(
                                     label = "Mail ID",
                                     value = viewModel.email,
-                                    onChange = { viewModel.emailChange(it) })
+                                    onChange = { viewModel.emailChange(it) },
+                                    keyboardType = KeyboardType.Email
+                                )
                                 Spacer(Modifier.height(10.dp))
                                 TextInput(
                                     label = "Address",

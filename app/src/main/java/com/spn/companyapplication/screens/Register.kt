@@ -22,6 +22,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -103,7 +104,9 @@ class Register : ComponentActivity() {
                         TextInput(
                             label = "Email",
                             value = viewModel.email,
-                            onChange = { viewModel.emailChange(it) })
+                            onChange = { viewModel.emailChange(it) },
+                            keyboardType = KeyboardType.Email
+                        )
                         Spacer(Modifier.height(15.dp))
                         TextInput(
                             label = "Username",
