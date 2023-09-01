@@ -38,6 +38,9 @@ class ViewLeadViewModel() : ViewModel() {
     val dateSortOptions = listOf("Ascending", "Descending")
     var showOptions by mutableStateOf(false)
 
+    var showImage by mutableStateOf(false)
+    var currentImageUrl by mutableStateOf("")
+
     var ascending by mutableStateOf(false)
     var showDateSortOptions by mutableStateOf(false)
 

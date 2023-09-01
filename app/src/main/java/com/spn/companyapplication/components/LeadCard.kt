@@ -1,5 +1,6 @@
 package com.spn.companyapplication.components
 
+import ShowImage
 import android.app.Activity
 import android.content.Context
 import android.util.Log
@@ -32,7 +33,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
-import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.spn.companyapplication.R
 import com.spn.companyapplication.models.Lead
@@ -42,6 +42,14 @@ import com.spn.companyapplication.viewmodels.ViewLeadViewModel
 fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel, activity: Activity) {
     var isExpanded by remember { mutableStateOf(false) }
     val rotationState by animateFloatAsState(targetValue = if (isExpanded) 180f else 0f)
+
+    if (viewModel.showImage) {
+        ShowImage(
+            showImage = viewModel.showImage,
+            onDismiss = { viewModel.showImage = false },
+            url = viewModel.currentImageUrl
+        )
+    }
 
     if (viewModel.showUpdateDialog) {
         StatusUpdateDialog(
@@ -187,18 +195,35 @@ fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel, activit
                     }
                 }
 
-                //TODO: Implement fetching of image
-//                if(lead.imageUrl != ""){
-//                    if(lead.documentUrl == ""){
-//                        Divider(color = Color.LightGray.copy(0.7f), modifier = Modifier.padding(vertical = 10.dp))
-//                    }
-//
-//                    Text(lead.imageUrl)
-//
-//                    val image = rememberImagePainter(data = lead.imageUrl)
-//
-//                    Image(image, contentDescription = "")
-//                }
+                if (lead.imageUrl != "") {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    if (lead.documentUrl == "") {
+                        Divider(
+                            color = Color.LightGray.copy(0.7f),
+                            modifier = Modifier.padding(vertical = 10.dp)
+                        )
+                    }
+
+                    Text(
+                        "Image", style = TextStyle(
+                            fontFamily = FontFamily(Font(R.font.outfit_semibold)),
+                            fontSize = 14.sp,
+                            color = Color.Gray
+                        )
+                    )
+
+                    Image(
+                        rememberImagePainter(data = lead.imageUrl),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .size(200.dp)
+                            .clickable {
+                                viewModel.currentImageUrl = lead.imageUrl
+                                viewModel.showImage = true
+                            },
+                        contentScale = ContentScale.Crop
+                    )
+                }
             }
 
             Row(
