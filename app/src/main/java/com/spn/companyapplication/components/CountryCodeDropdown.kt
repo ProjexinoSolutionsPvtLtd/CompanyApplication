@@ -59,7 +59,7 @@ fun CountryCodeDropdown(
             modifier = Modifier.height(200.dp),
             onDismissRequest = { expanded = false }
         ) {
-            viewModel.sortedCountryCodes.forEach { code ->
+            viewModel.formattedCountryCodes.forEach { code ->
                 DropdownMenuItem(
                     onClick = {
                         viewModel.onCountryCodeSelected(code)

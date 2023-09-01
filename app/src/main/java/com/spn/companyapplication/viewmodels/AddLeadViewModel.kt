@@ -43,7 +43,7 @@ class AddLeadViewModel() : ViewModel() {
     var organization by mutableStateOf("")
     var role by mutableStateOf("")
     var number by mutableStateOf("")
-    var countryCode by mutableStateOf("+91 (India)")
+    var countryCode by mutableStateOf("India (+91)")
     var email by mutableStateOf("")
     var address by mutableStateOf("")
     var requirement by mutableStateOf("")
@@ -116,7 +116,6 @@ class AddLeadViewModel() : ViewModel() {
         "+65 (Singapore)",
         "+66 (Thailand)",
         "+84 (Vietnam)",
-        "+91 (India)",
         "+92 (Pakistan)",
         "+880 (Bangladesh)",
         "+93 (Afghanistan)",
@@ -273,6 +272,8 @@ class AddLeadViewModel() : ViewModel() {
         countryName
     }
 
+    val formattedCountryCodes = sortedCountryCodes.map { formatCountryCode(it) }
+
     var imageUrl = ""
     var documentUrl = ""
     val firebaseAuth = FirebaseAuth.getInstance()
@@ -305,7 +306,7 @@ class AddLeadViewModel() : ViewModel() {
     }
 
     fun getCountryCodeNumber(): String {
-        return countryCode.split(" ")[0]
+        return countryCode.split(" ")[1].replace("(", "").replace(")", "")
     }
 
     fun addressChange(text: String) {
@@ -487,5 +488,11 @@ class AddLeadViewModel() : ViewModel() {
     fun validation() {
         validate =
             !(name == "" || organization == "" || role == "" || number == "" || email == "" || address == "" || requirement == "" || dateTimeValue == "")
+    }
+
+    fun formatCountryCode(countryCode: String): String {
+        val countryName = countryCode.substringAfter("(").substringBefore(")")
+        val code = countryCode.substringBefore(" (")
+        return "$countryName ($code)"
     }
 }
