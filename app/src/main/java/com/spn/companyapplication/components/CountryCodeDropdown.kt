@@ -9,13 +9,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.input.OffsetMapping
-import androidx.compose.ui.text.input.TransformedText
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.spn.companyapplication.R
@@ -27,51 +22,25 @@ fun CountryCodeDropdown(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    val countryCodes = listOf(
-        "+1 (US)",
-        "+44 (UK)",
-        "+91 (India)",
-        // Add more countries and codes as needed
-    )
-    Box() {
-        Text(
-            text = viewModel.getCountryCodeNumber(),
-            style = TextStyle(
-                fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                fontSize = 17.sp,
-                color = Color.Black
-            ),
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .padding(start = 16.dp)
-        )
-        val xOffset = 16.dp
-
-        // Create a VisualTransformation that applies the offset to the text
-        val offsetTransformation = remember {
-            VisualTransformation { text ->
-                // Create a new transformed Text with the offset
-                val transformedText = buildAnnotatedString {
-                    repeat(xOffset.value.toInt()) { append(' ') }
-                    append(text)
-                }
-                // Return the transformed text
-                TransformedText(text = transformedText, offsetMapping = OffsetMapping.Identity)
-            }
-        }
+    Box{
         OutlinedTextField(
-            value = viewModel.number,
-            onValueChange = {
-                viewModel.numberChange(it)
-            },
+            value = "${viewModel.getCountryCodeNumber()} ${viewModel.number}",
+            onValueChange = { viewModel.numberChange(it) },
             modifier = Modifier.fillMaxWidth(),
-            visualTransformation = offsetTransformation,
             textStyle = TextStyle(
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                 fontSize = 17.sp,
                 color = Color.Black
             ),
-//        label = { Text(text = "Country Code") },
+            label = {
+                Text(
+                    text = "Mobile Number", fontSize = 17.sp, style = TextStyle(
+                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                        fontSize = 17.sp,
+                        color = Color.Black
+                    )
+                )
+            },
             singleLine = true,
 //        readOnly = true, // Prevent text editing
             trailingIcon = {
@@ -83,20 +52,22 @@ fun CountryCodeDropdown(
                 }
             }
         )
-    }
 
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = { expanded = false }
-    ) {
-        countryCodes.forEach { code ->
-            DropdownMenuItem(
-                onClick = {
-                    viewModel.onCountryCodeSelected(code)
-                    expanded = false
+
+        DropdownMenu(
+            expanded = expanded,
+            modifier = Modifier.height(200.dp),
+            onDismissRequest = { expanded = false }
+        ) {
+            viewModel.sortedCountryCodes.forEach { code ->
+                DropdownMenuItem(
+                    onClick = {
+                        viewModel.onCountryCodeSelected(code)
+                        expanded = false
+                    }
+                ) {
+                    Text(text = code)
                 }
-            ) {
-                Text(text = code)
             }
         }
     }
