@@ -38,10 +38,12 @@ class AddLeadViewModel() : ViewModel() {
     var dateTimeValue by mutableStateOf("")
     var dateTime: Calendar by mutableStateOf(Calendar.getInstance())
 
+
     var name by mutableStateOf("")
     var organization by mutableStateOf("")
     var role by mutableStateOf("")
     var number by mutableStateOf("")
+    var countryCode by mutableStateOf("+91 (India)")
     var email by mutableStateOf("")
     var address by mutableStateOf("")
     var requirement by mutableStateOf("")
@@ -83,6 +85,14 @@ class AddLeadViewModel() : ViewModel() {
 
     fun numberChange(text: String) {
         number = text
+    }
+
+    fun onCountryCodeSelected(text: String) {
+        countryCode = text
+    }
+
+    fun getCountryCodeNumber(): String {
+        return countryCode.split(" ")[0]
     }
 
     fun addressChange(text: String) {

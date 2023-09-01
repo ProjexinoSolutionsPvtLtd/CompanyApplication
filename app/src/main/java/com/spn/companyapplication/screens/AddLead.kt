@@ -90,10 +90,7 @@ class AddLead : ComponentActivity() {
                                     value = viewModel.role,
                                     onChange = { viewModel.roleChange(it) })
                                 Spacer(Modifier.height(10.dp))
-                                TextInput(
-                                    label = "Number",
-                                    value = viewModel.number,
-                                    onChange = { viewModel.numberChange(it) })
+                                CountryCodeDropdown(viewModel)
                                 Spacer(Modifier.height(10.dp))
                                 TextInput(
                                     label = "Mail ID",
