@@ -11,6 +11,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -71,7 +72,7 @@ class Register : ComponentActivity() {
                         Text(
                             text = "Lets Register Your Account", style = TextStyle(
                                 fontFamily = FontFamily(Font(R.font.outfit_bold)),
-                                fontSize = 37.sp,
+                                fontSize = 27.sp,
                                 color = Color.Black
                             )
                         )
@@ -79,12 +80,18 @@ class Register : ComponentActivity() {
                             text = "Welcome! Have a fantastic journey with out app!",
                             style = TextStyle(
                                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                                fontSize = 28.sp,
+                                fontSize = 20.sp,
                                 color = Color.Black
                             )
                         )
 
-                        Spacer(Modifier.height(50.dp))
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_register_illustration),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .size(330.dp)
+                                .align(Alignment.CenterHorizontally)
+                        )
 
                         TextInput(
                             label = "Name",

@@ -16,6 +16,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,7 +47,7 @@ class Login : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val firebaseAuth = FirebaseAuth.getInstance()
 
-        if(firebaseAuth.currentUser != null){
+        if (firebaseAuth.currentUser != null) {
             startActivity(this@Login, Intent(this@Login, Home::class.java), null)
             finish()
         }
@@ -64,7 +65,8 @@ class Login : ComponentActivity() {
                         .padding(16.dp),
                     color = Color(("#ffffff").toColorInt())
                 ) {
-                    Column(Modifier.verticalScroll(ScrollState(0))
+                    Column(Modifier
+                        .verticalScroll(ScrollState(0))
                         .clickable(
                             interactionSource = MutableInteractionSource(),
                             indication = null,
@@ -75,25 +77,31 @@ class Login : ComponentActivity() {
                         Image(
                             painter = painterResource(id = R.drawable.logo_with_bg),
                             contentDescription = "logo",
-                            modifier = Modifier.width(180.dp)
+                            modifier = Modifier.width(130.dp)
                         )
 
                         Text(
                             text = "Lets Sign you in", style = TextStyle(
                                 fontFamily = FontFamily(Font(R.font.outfit_bold)),
-                                fontSize = 37.sp,
+                                fontSize = 30.sp,
                                 color = Color.Black
                             )
                         )
                         Text(
                             text = "Welcome back,\nYou have been missed", style = TextStyle(
                                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                                fontSize = 28.sp,
+                                fontSize = 24.sp,
                                 color = Color.Black
                             )
                         )
 
-                        Spacer(Modifier.height(50.dp))
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_login_illustration),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .size(330.dp)
+                                .align(Alignment.CenterHorizontally)
+                        )
 
                         TextInput(
                             label = "Email",
@@ -126,7 +134,7 @@ class Login : ComponentActivity() {
                             append(" Register Now")
                         }
 
-                        Spacer(Modifier.height(50.dp))
+                        Spacer(Modifier.height(20.dp))
 
                         Text(
                             text = annotatedString, textAlign = TextAlign.Center, style = TextStyle(
