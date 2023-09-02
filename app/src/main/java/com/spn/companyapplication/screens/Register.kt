@@ -9,6 +9,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -54,8 +55,7 @@ class Register : ComponentActivity() {
                         .padding(16.dp),
                     color = Color(("#ffffff").toColorInt())
                 ) {
-                    Column(Modifier
-                        .verticalScroll(ScrollState(0))
+                    LazyColumn(Modifier
                         .clickable(
                             interactionSource = MutableInteractionSource(),
                             indication = null,
@@ -63,109 +63,110 @@ class Register : ComponentActivity() {
                                 keyboardController?.hide()
                             }
                         )) {
-                        Image(
-                            painter = painterResource(id = R.drawable.logo_with_bg),
-                            contentDescription = "logo",
-                            modifier = Modifier.width(180.dp)
-                        )
+                        item(){
+                                Image(
+                                    painter = painterResource(id = R.drawable.logo_with_bg),
+                                    contentDescription = "logo",
+                                    modifier = Modifier.width(180.dp)
+                                )
 
-                        Text(
-                            text = "Lets Register Your Account", style = TextStyle(
-                                fontFamily = FontFamily(Font(R.font.outfit_bold)),
-                                fontSize = 27.sp,
-                                color = Color.Black
-                            )
-                        )
-                        Text(
-                            text = "Welcome! Have a fantastic journey with out app!",
-                            style = TextStyle(
-                                fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                                fontSize = 20.sp,
-                                color = Color.Black
-                            )
-                        )
+                                Text(
+                                    text = "Lets Register Your Account", style = TextStyle(
+                                        fontFamily = FontFamily(Font(R.font.outfit_bold)),
+                                        fontSize = 27.sp,
+                                        color = Color.Black
+                                    )
+                                )
+                                Text(
+                                    text = "Welcome! Have a fantastic journey with out app!",
+                                    style = TextStyle(
+                                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                        fontSize = 20.sp,
+                                        color = Color.Black
+                                    )
+                                )
 
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_register_illustration),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .size(330.dp)
-                                .align(Alignment.CenterHorizontally)
-                        )
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_register_illustration),
+                                    contentDescription = "",
+                                    modifier = Modifier
+                                        .size(330.dp)
+                                )
 
-                        TextInput(
-                            label = "Name",
-                            value = viewModel.name,
-                            onChange = { viewModel.nameChange(it) })
-                        Spacer(Modifier.height(15.dp))
-                        Dropdown(
-                            onDropdownMenuChange = { viewModel.showRoleOptions = !viewModel.showRoleOptions },
-                            onDismiss = { viewModel.showRoleOptions = false },
-                            showOptions = viewModel.showRoleOptions,
-                            onSelected = { viewModel.onRoleDropdownOptionSelect(it) },
-                            hint = viewModel.role,
-                            rotationState = rotationState,
-                            options = viewModel.roleOptions
-                        )
-                        Spacer(Modifier.height(15.dp))
-                        TextInput(
-                            label = "Email",
-                            value = viewModel.email,
-                            onChange = { viewModel.emailChange(it) },
-                            keyboardType = KeyboardType.Email
-                        )
-                        Spacer(Modifier.height(15.dp))
-                        TextInput(
-                            label = "Username",
-                            value = viewModel.username,
-                            onChange = { viewModel.usernameChange(it) })
-                        Spacer(Modifier.height(15.dp))
-                        TextInput(
-                            label = "Password",
-                            value = viewModel.password,
-                            onChange = { viewModel.passwordChange(it) },
-                            isPassword = true
-                        )
+                                TextInput(
+                                    label = "Name",
+                                    value = viewModel.name,
+                                    onChange = { viewModel.nameChange(it) })
+                                Spacer(Modifier.height(15.dp))
+                                Dropdown(
+                                    onDropdownMenuChange = { viewModel.showRoleOptions = !viewModel.showRoleOptions },
+                                    onDismiss = { viewModel.showRoleOptions = false },
+                                    showOptions = viewModel.showRoleOptions,
+                                    onSelected = { viewModel.onRoleDropdownOptionSelect(it) },
+                                    hint = viewModel.role,
+                                    rotationState = rotationState,
+                                    options = viewModel.roleOptions
+                                )
+                                Spacer(Modifier.height(15.dp))
+                                TextInput(
+                                    label = "Email",
+                                    value = viewModel.email,
+                                    onChange = { viewModel.emailChange(it) },
+                                    keyboardType = KeyboardType.Email
+                                )
+                                Spacer(Modifier.height(15.dp))
+                                TextInput(
+                                    label = "Username",
+                                    value = viewModel.username,
+                                    onChange = { viewModel.usernameChange(it) })
+                                Spacer(Modifier.height(15.dp))
+                                TextInput(
+                                    label = "Password",
+                                    value = viewModel.password,
+                                    onChange = { viewModel.passwordChange(it) },
+                                    isPassword = true
+                                )
 
 
-                        Spacer(Modifier.height(50.dp))
+                                Spacer(Modifier.height(50.dp))
 
-                        Button(
-                            text = "Sign In",
-                            enabled = viewModel.validate,
-                            onClick = {
-                                if(viewModel.validateForm(this@Register)){
-                                    viewModel.registerUser(this@Register)
-                                }
-                            },
-                            color = Color(("#130b5c").toColorInt()),
-                            uppercase = false,
-                            showLoader = viewModel.showLoader
-                        )
-
-                        val annotatedString = buildAnnotatedString {
-                            append("Already have an account?")
-                            pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
-                            append(" Log In")
-                        }
-
-                        Spacer(Modifier.height(30.dp))
-
-                        Text(
-                            text = annotatedString, textAlign = TextAlign.Center, style = TextStyle(
-                                fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                                fontSize = 16.sp,
-                                color = Color.Black
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable(
-                                    indication = null,
-                                    interactionSource = MutableInteractionSource(),
+                                Button(
+                                    text = "Sign In",
+                                    enabled = viewModel.validate,
                                     onClick = {
-                                        startActivity(Intent(this@Register, Login::class.java))
-                                    })
-                        )
+                                        if(viewModel.validateForm(this@Register)){
+                                            viewModel.registerUser(this@Register)
+                                        }
+                                    },
+                                    color = Color(("#130b5c").toColorInt()),
+                                    uppercase = false,
+                                    showLoader = viewModel.showLoader
+                                )
+
+                                val annotatedString = buildAnnotatedString {
+                                    append("Already have an account?")
+                                    pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
+                                    append(" Log In")
+                                }
+
+                                Spacer(Modifier.height(30.dp))
+
+                                Text(
+                                    text = annotatedString, textAlign = TextAlign.Center, style = TextStyle(
+                                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                        fontSize = 16.sp,
+                                        color = Color.Black
+                                    ),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = MutableInteractionSource(),
+                                            onClick = {
+                                                startActivity(Intent(this@Register, Login::class.java))
+                                            })
+                                )
+                        }
                     }
                 }
             }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -65,8 +66,7 @@ class Login : ComponentActivity() {
                         .padding(16.dp),
                     color = Color(("#ffffff").toColorInt())
                 ) {
-                    Column(Modifier
-                        .verticalScroll(ScrollState(0))
+                    LazyColumn(Modifier
                         .clickable(
                             interactionSource = MutableInteractionSource(),
                             indication = null,
@@ -74,83 +74,86 @@ class Login : ComponentActivity() {
                                 keyboardController?.hide()
                             }
                         )) {
-                        Image(
-                            painter = painterResource(id = R.drawable.logo_with_bg),
-                            contentDescription = "logo",
-                            modifier = Modifier.width(130.dp)
-                        )
-
-                        Text(
-                            text = "Lets Sign you in", style = TextStyle(
-                                fontFamily = FontFamily(Font(R.font.outfit_bold)),
-                                fontSize = 30.sp,
-                                color = Color.Black
+                        item() {
+                            Image(
+                                painter = painterResource(id = R.drawable.logo_with_bg),
+                                contentDescription = "logo",
+                                modifier = Modifier.width(130.dp)
                             )
-                        )
-                        Text(
-                            text = "Welcome back,\nYou have been missed", style = TextStyle(
-                                fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                                fontSize = 24.sp,
-                                color = Color.Black
+
+                            Text(
+                                text = "Lets Sign you in", style = TextStyle(
+                                    fontFamily = FontFamily(Font(R.font.outfit_bold)),
+                                    fontSize = 30.sp,
+                                    color = Color.Black
+                                )
                             )
-                        )
+                            Text(
+                                text = "Welcome back,\nYou have been missed", style = TextStyle(
+                                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                    fontSize = 24.sp,
+                                    color = Color.Black
+                                )
+                            )
 
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_login_illustration),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .size(330.dp)
-                                .align(Alignment.CenterHorizontally)
-                        )
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_login_illustration),
+                                contentDescription = "",
+                                modifier = Modifier
+                                    .size(330.dp)
+                            )
 
-                        TextInput(
-                            label = "Email",
-                            value = viewModel.username,
-                            onChange = { viewModel.usernameChange(it) })
-                        Spacer(Modifier.height(15.dp))
-                        TextInput(
-                            label = "Password",
-                            value = viewModel.password,
-                            onChange = { viewModel.passwordChange(it) },
-                            isPassword = true
-                        )
+                            TextInput(
+                                label = "Email",
+                                value = viewModel.username,
+                                onChange = { viewModel.usernameChange(it) })
+                            Spacer(Modifier.height(15.dp))
+                            TextInput(
+                                label = "Password",
+                                value = viewModel.password,
+                                onChange = { viewModel.passwordChange(it) },
+                                isPassword = true
+                            )
 
-                        Spacer(Modifier.height(50.dp))
+                            Spacer(Modifier.height(50.dp))
 
-                        Button(
-                            text = "Login",
-                            enabled = viewModel.validate,
-                            onClick = {
-                                viewModel.loginUser(this@Login)
-                            },
-                            color = Color(("#130b5c").toColorInt()),
-                            uppercase = false,
-                            showLoader = viewModel.showLoader
-                        )
+                            Button(
+                                text = "Login",
+                                enabled = viewModel.validate,
+                                onClick = {
+                                    viewModel.loginUser(this@Login)
+                                },
+                                color = Color(("#130b5c").toColorInt()),
+                                uppercase = false,
+                                showLoader = viewModel.showLoader
+                            )
 
-                        val annotatedString = buildAnnotatedString {
-                            append("Don't have an account?")
-                            pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
-                            append(" Register Now")
+                            val annotatedString = buildAnnotatedString {
+                                append("Don't have an account?")
+                                pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
+                                append(" Register Now")
+                            }
+
+                            Spacer(Modifier.height(20.dp))
+
+                            Text(
+                                text = annotatedString,
+                                textAlign = TextAlign.Center,
+                                style = TextStyle(
+                                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                    fontSize = 16.sp,
+                                    color = Color.Black
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable(
+                                        indication = null,
+                                        interactionSource = MutableInteractionSource(),
+                                        onClick = {
+                                            startActivity(Intent(this@Login, Register::class.java))
+                                        })
+                            )
                         }
-
-                        Spacer(Modifier.height(20.dp))
-
-                        Text(
-                            text = annotatedString, textAlign = TextAlign.Center, style = TextStyle(
-                                fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                                fontSize = 16.sp,
-                                color = Color.Black
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable(
-                                    indication = null,
-                                    interactionSource = MutableInteractionSource(),
-                                    onClick = {
-                                        startActivity(Intent(this@Login, Register::class.java))
-                                    })
-                        )
                     }
                 }
             }

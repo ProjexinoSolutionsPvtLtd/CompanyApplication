@@ -12,6 +12,7 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -56,10 +57,9 @@ class AddLead : ComponentActivity() {
                         context = this@AddLead,
                         activity = this@AddLead,
                         content = {
-                            Column(
+                            LazyColumn(
                                 Modifier
                                     .padding(16.dp)
-                                    .verticalScroll(ScrollState(0))
                                     .clickable(
                                         interactionSource = MutableInteractionSource(),
                                         indication = null,
@@ -68,75 +68,81 @@ class AddLead : ComponentActivity() {
                                         }
                                     )
                             ) {
-                                Text(
-                                    text = "Fill the form to add a new Lead", style = TextStyle(
-                                        fontFamily = FontFamily(Font(R.font.outfit_bold)),
-                                        fontSize = 28.sp,
-                                        color = Color.Black
+                                item()
+                                {
+                                    Text(
+                                        text = "Fill the form to add a new Lead", style = TextStyle(
+                                            fontFamily = FontFamily(Font(R.font.outfit_bold)),
+                                            fontSize = 28.sp,
+                                            color = Color.Black
+                                        )
                                     )
-                                )
 
-                                TextInput(
-                                    label = "Name",
-                                    value = viewModel.name,
-                                    onChange = { viewModel.nameChange(it) })
-                                Spacer(Modifier.height(10.dp))
-                                TextInput(
-                                    label = "Organization",
-                                    value = viewModel.organization,
-                                    onChange = { viewModel.organizationChange(it) })
-                                Spacer(Modifier.height(10.dp))
-                                TextInput(
-                                    label = "Role",
-                                    value = viewModel.role,
-                                    onChange = { viewModel.roleChange(it) })
-                                Spacer(Modifier.height(10.dp))
-                                CountryCodeDropdown(viewModel)
-                                Spacer(Modifier.height(10.dp))
-                                TextInput(
-                                    label = "Mail ID",
-                                    value = viewModel.email,
-                                    onChange = { viewModel.emailChange(it) },
-                                    keyboardType = KeyboardType.Email
-                                )
-                                Spacer(Modifier.height(10.dp))
-                                TextInput(
-                                    label = "Address",
-                                    value = viewModel.address,
-                                    onChange = { viewModel.addressChange(it) })
-                                Spacer(Modifier.height(10.dp))
-                                TextInput(
-                                    label = "Requirement",
-                                    value = viewModel.requirement,
-                                    onChange = { viewModel.requirementChange(it) })
-                                Spacer(Modifier.height(10.dp))
-                                DateTimePicker(
-                                    context = this@AddLead,
-                                    value = viewModel.dateTimeValue,
-                                    label = "Date/Time",
-                                    selectedDate = viewModel.dateTime,
-                                    onSelect = { viewModel.onDateTimeSelect(it, this@AddLead) }
-                                )
-                                Spacer(Modifier.height(10.dp))
-                                AddDocumentInput(viewModel, LocalContext.current.contentResolver)
-                                Spacer(Modifier.height(20.dp))
-                                AddImageInput(this@AddLead, viewModel)
-                                Spacer(Modifier.height(30.dp))
-                                Button(
-                                    text = "Submit",
-                                    enabled = viewModel.validate,
-                                    onClick = {
-                                        viewModel.uploadLead(this@AddLead, this@AddLead)
+                                    TextInput(
+                                        label = "Name",
+                                        value = viewModel.name,
+                                        onChange = { viewModel.nameChange(it) })
+                                    Spacer(Modifier.height(10.dp))
+                                    TextInput(
+                                        label = "Organization",
+                                        value = viewModel.organization,
+                                        onChange = { viewModel.organizationChange(it) })
+                                    Spacer(Modifier.height(10.dp))
+                                    TextInput(
+                                        label = "Role",
+                                        value = viewModel.role,
+                                        onChange = { viewModel.roleChange(it) })
+                                    Spacer(Modifier.height(10.dp))
+                                    CountryCodeDropdown(viewModel)
+                                    Spacer(Modifier.height(10.dp))
+                                    TextInput(
+                                        label = "Mail ID",
+                                        value = viewModel.email,
+                                        onChange = { viewModel.emailChange(it) },
+                                        keyboardType = KeyboardType.Email
+                                    )
+                                    Spacer(Modifier.height(10.dp))
+                                    TextInput(
+                                        label = "Address",
+                                        value = viewModel.address,
+                                        onChange = { viewModel.addressChange(it) })
+                                    Spacer(Modifier.height(10.dp))
+                                    TextInput(
+                                        label = "Requirement",
+                                        value = viewModel.requirement,
+                                        onChange = { viewModel.requirementChange(it) })
+                                    Spacer(Modifier.height(10.dp))
+                                    DateTimePicker(
+                                        context = this@AddLead,
+                                        value = viewModel.dateTimeValue,
+                                        label = "Date/Time",
+                                        selectedDate = viewModel.dateTime,
+                                        onSelect = { viewModel.onDateTimeSelect(it, this@AddLead) }
+                                    )
+                                    Spacer(Modifier.height(10.dp))
+                                    AddDocumentInput(
+                                        viewModel,
+                                        LocalContext.current.contentResolver
+                                    )
+                                    Spacer(Modifier.height(20.dp))
+                                    AddImageInput(this@AddLead, viewModel)
+                                    Spacer(Modifier.height(30.dp))
+                                    Button(
+                                        text = "Submit",
+                                        enabled = viewModel.validate,
+                                        onClick = {
+                                            viewModel.uploadLead(this@AddLead, this@AddLead)
 //                                        ContextCompat.startActivity(
 //                                            this@AddLead,
 //                                            Intent(this@AddLead, Home::class.java),
 //                                            null
 //                                        )
-                                    },
-                                    color = Color(("#130b5c").toColorInt()),
-                                    uppercase = false,
-                                    showLoader = viewModel.showButtonLoader
-                                )
+                                        },
+                                        color = Color(("#130b5c").toColorInt()),
+                                        uppercase = false,
+                                        showLoader = viewModel.showButtonLoader
+                                    )
+                                }
                             }
                         })
                 }
