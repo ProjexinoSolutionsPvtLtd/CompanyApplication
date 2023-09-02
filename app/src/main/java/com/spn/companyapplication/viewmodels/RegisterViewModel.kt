@@ -59,46 +59,65 @@ class RegisterViewModel(): ViewModel(){
         role = text
     }
 
-    fun registerUser(activity: Activity){
+    fun registerUser(activity: Activity) {
         showLoader = true
-        firebaseAuth.createUserWithEmailAndPassword(email, password)
+        val firebaseAuth = FirebaseAuth.getInstance()
+
+        // Check if the user with the provided email already exists
+        firebaseAuth.fetchSignInMethodsForEmail(email)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val user = firebaseAuth.currentUser
-                    val userId = user?.uid ?: ""
+                    val signInMethods = task.result?.signInMethods ?: emptyList<String>()
 
-                    val userInfo = User(name, role, email, username)
+                    if (signInMethods.isNotEmpty()) {
+                        // User with this email already exists
+                        showLoader = false
+                        Toast.makeText(activity, "User with this email already exists.", Toast.LENGTH_LONG).show()
+                    } else {
+                        // User does not exist, proceed with registration
+                        firebaseAuth.createUserWithEmailAndPassword(email, password)
+                            .addOnCompleteListener { registrationTask ->
+                                if (registrationTask.isSuccessful) {
+                                    val user = firebaseAuth.currentUser
+                                    val userId = user?.uid ?: ""
+                                    val userInfo = User(name, role, email, username)
 
-                    firebaseFirestore.collection("users")
-                        .document(userId)
-                        .set(userInfo)
-                        .addOnSuccessListener {
-                            val toast = "Registration Successful. You have been logged in."
-                            val centeredText = SpannableString(toast)
-                            centeredText.setSpan(
-                                AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0, toast.length - 1, Spannable.SPAN_INCLUSIVE_INCLUSIVE
-                            )
-                            Toast.makeText(activity, centeredText, Toast.LENGTH_SHORT).show()
+                                    firebaseFirestore.collection("users")
+                                        .document(userId)
+                                        .set(userInfo)
+                                        .addOnSuccessListener {
+                                            val toast = "Registration Successful. You have been logged in."
+                                            val centeredText = SpannableString(toast)
+                                            centeredText.setSpan(
+                                                AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
+                                                0,
+                                                toast.length - 1,
+                                                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                                            )
+                                            Toast.makeText(activity, centeredText, Toast.LENGTH_SHORT).show()
 
-                            activity.startActivity(Intent(activity, Home::class.java))
-                            activity.finish()
-                        }
-                        .addOnFailureListener { e ->
-                            showLoader = false
-
-                            Log.d("TAG64", e.toString())
-                            Toast.makeText(activity, "Something went wrong. Try Again", Toast.LENGTH_SHORT).show()
-                        }
+                                            activity.startActivity(Intent(activity, Home::class.java))
+                                            activity.finish()
+                                        }
+                                        .addOnFailureListener { e ->
+                                            showLoader = false
+                                            Log.d("TAG64", e.toString())
+                                            Toast.makeText(activity, "Something went wrong. Try Again", Toast.LENGTH_SHORT).show()
+                                        }
+                                } else {
+                                    showLoader = false
+                                    Toast.makeText(activity, "Couldn't save user details.", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                    }
                 } else {
-                    Toast.makeText(activity, "Couldn't save user details.", Toast.LENGTH_SHORT).show()
+                    showLoader = false
+                    task.exception?.toString()?.let { Log.d("TAG85", it) }
+                    Toast.makeText(activity, "Something went wrong. Try Again", Toast.LENGTH_SHORT).show()
                 }
-            }.addOnFailureListener{e ->
-                showLoader = false
-
-                Log.d("TAG85", e.toString())
-                Toast.makeText(activity, "Something went wrong. Try Again", Toast.LENGTH_SHORT).show()
             }
     }
+
 
     fun validation() {
         validate =
