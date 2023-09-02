@@ -134,7 +134,9 @@ class Register : ComponentActivity() {
                             text = "Sign In",
                             enabled = viewModel.validate,
                             onClick = {
-                                viewModel.registerUser(this@Register)
+                                if(viewModel.validateForm(this@Register)){
+                                    viewModel.registerUser(this@Register)
+                                }
                             },
                             color = Color(("#130b5c").toColorInt()),
                             uppercase = false,

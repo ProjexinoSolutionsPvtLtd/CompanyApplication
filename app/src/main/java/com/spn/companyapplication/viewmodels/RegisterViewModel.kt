@@ -121,7 +121,21 @@ class RegisterViewModel(): ViewModel(){
 
     fun validation() {
         validate =
-            !(username == "" || password == "" || role == "Select Role" || email == "" || !isValidEmail(email) || name == "")
+            !(username == "" || password == "" || role == "Select Role" || email == "" || name == "")
+    }
+
+    fun validateForm(activity: Activity): Boolean{
+        if(password.length < 6){
+            Toast.makeText(activity, "Passwords must be at least six characters long", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        if(!isValidEmail(email)){
+            Toast.makeText(activity, "Incorrect email format", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        return true
     }
 
     fun isValidEmail(email: String): Boolean {
