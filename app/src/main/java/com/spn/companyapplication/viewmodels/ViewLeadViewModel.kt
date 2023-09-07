@@ -12,10 +12,13 @@ import android.text.SpannableString
 import android.text.style.AlignmentSpan
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.capitalize
+import androidx.core.graphics.toColorInt
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
@@ -301,5 +304,18 @@ class ViewLeadViewModel() : ViewModel() {
         showUpdateDialog = false
         selectedStatusForUpdate = "Select Status"
         commentForStatusUpdate = ""
+    }
+
+    fun getStatusColor(status: String): androidx.compose.ui.graphics.Color {
+        when (status){
+            "Opened" -> return Color(("#008080").toColorInt()).copy(0.5f)
+            "Contacted" -> return Color(("#191744").toColorInt()).copy(0.5f)
+            "Hold" -> return Color(("#0054a6").toColorInt()).copy(0.5f)
+            "Lost/Closed" -> return Color(("#001f3f").toColorInt()).copy(0.5f)
+            "Converted" -> return Color(("#87ceeb").toColorInt()).copy(0.5f)
+        }
+
+
+        return Color(("#103b5c").toColorInt()).copy(0.5f)
     }
 }

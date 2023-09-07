@@ -91,7 +91,7 @@ fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel, activit
                     Box(
                         Modifier
                             .clip(RoundedCornerShape(15.dp))
-                            .background(Color(("#103b5c").toColorInt()).copy(0.5f))
+                            .background(viewModel.getStatusColor(lead.status))
                             .clickable(
                                 interactionSource = MutableInteractionSource(),
                                 indication = null,

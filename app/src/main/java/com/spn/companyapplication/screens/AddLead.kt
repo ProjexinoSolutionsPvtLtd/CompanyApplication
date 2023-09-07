@@ -45,6 +45,10 @@ class AddLead : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             viewModel.validation()
+            if(viewModel.dateTimeValue == "") {
+                viewModel.setDefaultDate()
+            }
+
             val keyboardController = LocalSoftwareKeyboardController.current
             CompanyApplicationTheme {
                 // A surface container using the 'background' color from the theme

@@ -436,6 +436,12 @@ class AddLeadViewModel() : ViewModel() {
 
     }
 
+    fun setDefaultDate(){
+        val dateFormat = SimpleDateFormat("HH:mm, dd-MMM-yyyy", Locale.getDefault())
+        val currentDate = Date()
+        dateTimeValue = dateFormat.format(currentDate)
+    }
+
     fun documentUpload(context: Context, activity: Activity) {
         val documentReference =
             storageReference.child("lead_documents/${selectedDocumentUri!!.lastPathSegment}")

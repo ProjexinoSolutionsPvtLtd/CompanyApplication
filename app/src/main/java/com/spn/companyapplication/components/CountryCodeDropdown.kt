@@ -47,7 +47,6 @@ fun CountryCodeDropdown(
                 )
             },
             singleLine = true,
-//        readOnly = true, // Prevent text editing
             trailingIcon = {
                 IconButton(
                     onClick = { expanded = !expanded },
@@ -71,7 +70,13 @@ fun CountryCodeDropdown(
                         expanded = false
                     }
                 ) {
-                    Text(text = code)
+                    Text(
+                        text = code, fontSize = 17.sp, style = TextStyle(
+                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                            fontSize = 17.sp,
+                            color = Color.Black
+                        )
+                    )
                 }
             }
         }
