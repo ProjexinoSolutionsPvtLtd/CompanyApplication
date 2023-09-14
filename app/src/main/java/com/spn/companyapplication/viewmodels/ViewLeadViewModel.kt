@@ -3,6 +3,7 @@ package com.spn.companyapplication.viewmodels
 import android.app.Activity
 import android.content.*
 import android.net.Uri
+import com.itextpdf.text.Document
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
@@ -20,6 +21,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.capitalize
 import androidx.core.graphics.toColorInt
 import androidx.lifecycle.ViewModel
+import android.os.Environment
+import com.itextpdf.text.Paragraph
+import com.itextpdf.text.pdf.PdfWriter
+import java.io.File
+import java.io.FileOutputStream
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -39,6 +45,7 @@ import java.util.*
 class ViewLeadViewModel() : ViewModel() {
     val filterOptions = listOf("Opened", "Contacted", "Hold", "Lost/Closed", "Converted")
     val dateSortOptions = listOf("Ascending", "Descending")
+    val downloadOptions = listOf("Excel", "PDF")
     var showOptions by mutableStateOf(false)
 
     var showImage by mutableStateOf(false)
@@ -47,11 +54,14 @@ class ViewLeadViewModel() : ViewModel() {
     var ascending by mutableStateOf(false)
     var showDateSortOptions by mutableStateOf(false)
 
+    var showDownloadOptions by mutableStateOf(false)
+
     var selectedOption by mutableStateOf("")
     var dateSortSelectedOption by mutableStateOf("")
 
     var currentLeadId by mutableStateOf("")
     var selectedStatusForUpdate by mutableStateOf("Select Status")
+    var downloadOption by mutableStateOf("")
     var commentForStatusUpdate by mutableStateOf("")
     var showStatusUpdateOptions by mutableStateOf(false)
 
@@ -61,6 +71,53 @@ class ViewLeadViewModel() : ViewModel() {
 
     var leadsList = mutableListOf<Lead>()
     var completeLeadsList = mutableListOf<Lead>()
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun generatePDF(leadsList: List<Lead>, context: Context) {
+        val document = Document()
+
+        try {
+            val contentValues = ContentValues()
+            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "Leads.pdf")
+            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
+
+            val uri = context.contentResolver.insert(
+                MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                contentValues
+            )
+
+            if (uri != null) {
+                val fileOutputStream = context.contentResolver.openOutputStream(uri)
+                PdfWriter.getInstance(document, fileOutputStream)
+
+                document.open()
+
+                for (lead in leadsList) {
+                    document.add(Paragraph("Name: ${lead.name}"))
+                    document.add(Paragraph("Role: ${lead.role}"))
+                    document.add(Paragraph("Number: ${lead.number}"))
+                    document.add(Paragraph("Organization: ${lead.organization}"))
+                    document.add(Paragraph("Email: ${lead.email}"))
+                    document.add(Paragraph("Requirement: ${lead.requirement}"))
+                    document.add(Paragraph("Address: ${lead.address}"))
+                    document.add(Paragraph("Date & Time: ${lead.dateTimeValue}"))
+                    document.add(Paragraph("Status: ${lead.status}"))
+                    document.add(Paragraph("Created By: ${lead.createdBy}"))
+                    document.add(Paragraph("\n"))
+                }
+
+                document.close()
+
+                Toast.makeText(context, "PDF Generated Successfully", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "Error creating file", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.d("TAG190", e.message.toString())
+            Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     @RequiresApi(Build.VERSION_CODES.Q)
     fun exportLeadsToExcel(leads: List<Lead>, contentResolver: ContentResolver, activity: Activity) {
@@ -110,11 +167,11 @@ class ViewLeadViewModel() : ViewModel() {
                     workbook.close()
                     outputStream.flush()
                     outputStream.close()
-                    Log.d("TAG61", "Excel file created successfully.")
+                    Log.d("TAG61", "Excel File Generated Successfully")
                 }
             }
 
-            val toast = "Leads data downloaded successfully"
+            val toast = "Excel File Generated Successfully"
             val centeredText = SpannableString(toast)
             centeredText.setSpan(
                 AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0, toast.length - 1, Spannable.SPAN_INCLUSIVE_INCLUSIVE
@@ -143,6 +200,10 @@ class ViewLeadViewModel() : ViewModel() {
 
     fun onStatusUpdateDropdownOptionSelect(text: String){
         selectedStatusForUpdate = text
+    }
+
+    fun onDownloadOptionSelect(text: String){
+        downloadOption = text
     }
 
     fun fetchLeads(activity: Activity) {

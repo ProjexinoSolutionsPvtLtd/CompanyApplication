@@ -49,11 +49,7 @@ fun BoxScope.Filter(
                 .padding(horizontal = 11.dp, vertical = 9.dp)
         ) {
             IconWithText(icon = R.drawable.ic_download, text = "Download") {
-                viewModel.exportLeadsToExcel(
-                    viewModel.leadsList,
-                    contentResolver,
-                    activity
-                )
+                viewModel.showDownloadOptions = true
             } //Download Leads
 
             Spacer(
@@ -78,29 +74,6 @@ fun BoxScope.Filter(
             IconWithText(icon = R.drawable.ic_filter, text = "Filter") {
                 viewModel.showOptions = true
             } //Filter based on Lead Status
-
-
-//            Icon(
-//                painter = painterResource(id = R.drawable.ic_baseline_sort_24),
-//                contentDescription = "Sort by Date",
-//                tint = Color.Gray,
-//                modifier = Modifier
-//                    .size(30.dp)
-//                    .clickable {
-//                        viewModel.showDateSortOptions = true
-//                    }
-//            )
-//            Spacer(Modifier.width(10.dp))
-//            Icon(
-//                painter = painterResource(id = R.drawable.ic_filter),
-//                contentDescription = "Filter based on Lead Status",
-//                tint = Color.Gray,
-//                modifier = Modifier
-//                    .size(30.dp)
-//                    .clickable {
-//                        viewModel.showOptions = true
-//                    },
-//            )
         }
 
         val configuration = LocalConfiguration.current
@@ -136,6 +109,28 @@ fun BoxScope.Filter(
                         Pair("Ascending") { viewModel.sortLeadsByDate() },
                         Pair("Descending") { viewModel.sortLeadsByDate() },
                         Pair("") { viewModel.fetchLeads(activity) },
+                    ),
+                    getSelectedOption = { viewModel.getDateSortTypeSelectedOption() }
+                )
+            }
+        }
+
+        if (viewModel.showDownloadOptions) {
+            Box(modifier = Modifier.offset(x = screenWidthDp.times(0.05f))) {
+                DropdownMenu(
+                    showOptions = viewModel.showDownloadOptions,
+                    onDismiss = { viewModel.showDownloadOptions = false },
+                    options = viewModel.downloadOptions,
+                    onSelected = { viewModel.onDownloadOptionSelect(it) },
+                    onClickMap = mapOf(
+                        Pair("Excel") {
+                            viewModel.exportLeadsToExcel(
+                                viewModel.leadsList,
+                                contentResolver,
+                                activity
+                            )
+                        },
+                        Pair("PDF") { viewModel.generatePDF(viewModel.leadsList, activity) },
                     ),
                     getSelectedOption = { viewModel.getDateSortTypeSelectedOption() }
                 )
