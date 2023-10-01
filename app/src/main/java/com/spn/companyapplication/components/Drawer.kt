@@ -20,7 +20,14 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun Drawer(title: String, context: Context, activity: Activity, content: @Composable () -> Unit) {
+fun Drawer(
+    title: String,
+    context: Context,
+    activity: Activity,
+    content: @Composable () -> Unit,
+    share: Boolean = false,
+    onShareClicked: (() -> Unit) ?= null
+) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
     Scaffold(
@@ -32,7 +39,13 @@ fun Drawer(title: String, context: Context, activity: Activity, content: @Compos
                         scaffoldState.drawerState.open()
                     }
                 },
-                title
+                title,
+                share = share,
+                onShareClicked = {
+                    if (onShareClicked != null) {
+                        onShareClicked.invoke()
+                    }
+                }
             )
         },
         drawerGesturesEnabled = scaffoldState.drawerState.isOpen,
@@ -96,10 +109,10 @@ fun Drawer(title: String, context: Context, activity: Activity, content: @Compos
                             firebaseAuth.signOut()
 
                             activity.finish()
-                            startActivity(context, Intent(activity, Login::class.java),null)
+                            startActivity(context, Intent(activity, Login::class.java), null)
                         }
                     }
-                }
+                },
             )
         }
     ) {

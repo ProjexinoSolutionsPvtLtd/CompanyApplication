@@ -70,6 +70,8 @@ class ViewLead : ComponentActivity() {
                         title = "View Leads",
                         context = this@ViewLead,
                         activity = this@ViewLead,
+                        onShareClicked = { viewModel.createTextFromLeadList(this@ViewLead) },
+                        share = true,
                         content = {
                             if (viewModel.showContent) {
                                 Box(Modifier.fillMaxSize()) {

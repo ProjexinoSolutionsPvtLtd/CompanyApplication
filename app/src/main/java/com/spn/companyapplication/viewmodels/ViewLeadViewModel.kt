@@ -182,6 +182,35 @@ class ViewLeadViewModel() : ViewModel() {
         }
     }
 
+    fun createTextFromLeadList(activity: Activity) {
+        val builder = StringBuilder()
+
+        for (lead in completeLeadsList) {
+            builder.append("Name: ${lead.name}\n")
+            builder.append("Role: ${lead.role}\n")
+            builder.append("Number: ${lead.number}\n")
+            builder.append("Organization: ${lead.organization}\n")
+            builder.append("Email: ${lead.email}\n")
+            builder.append("Requirement: ${lead.requirement}\n")
+            builder.append("Address: ${lead.address}\n")
+            builder.append("Date & Time: ${lead.dateTimeValue}\n")
+            builder.append("Status: ${lead.status}\n")
+            builder.append("\n\n") // Separate each lead
+        }
+
+        shareLeadListViaText(activity, builder.toString())
+    }
+
+    fun shareLeadListViaText(activity: Activity, text: String) {
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.type = "text/plain"
+        shareIntent.putExtra(Intent.EXTRA_TEXT, text)
+
+        activity.startActivity(Intent.createChooser(shareIntent, "Share Lead List"))
+    }
+
+
+
     fun hideLoader() {
         showContent = true
     }
