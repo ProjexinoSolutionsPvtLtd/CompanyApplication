@@ -185,7 +185,7 @@ class ViewLeadViewModel() : ViewModel() {
     fun createTextFromLeadList(activity: Activity) {
         val builder = StringBuilder()
 
-        for (lead in completeLeadsList) {
+        for (lead in leadsList) {
             builder.append("Name: ${lead.name}\n")
             builder.append("Role: ${lead.role}\n")
             builder.append("Number: ${lead.number}\n")
