@@ -6,7 +6,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -16,11 +15,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.spn.companyapplication.R
-import com.spn.companyapplication.viewmodels.AddLeadViewModel
+import com.spn.companyapplication.viewmodels.AddTaskViewModel
 
 @Composable
 fun CountryCodeDropdown(
-    viewModel: AddLeadViewModel
+    viewModel: AddTaskViewModel
 ) {
     var expanded by remember { mutableStateOf(false) }
 

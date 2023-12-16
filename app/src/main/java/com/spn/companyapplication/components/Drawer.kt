@@ -60,6 +60,18 @@ fun Drawer(
                         icon = R.drawable.ic_baseline_home_24
                     ),
                     MenuItem(
+                        id = "add_task",
+                        title = "Add Task",
+                        contentDescription = "",
+                        icon = R.drawable.add_task
+                    ),
+                    MenuItem(
+                        id = "view_task",
+                        title = "View Tasks",
+                        contentDescription = "",
+                        icon = R.drawable.view_task
+                    ),
+                    MenuItem(
                         id = "add_lead",
                         title = "Add Lead",
                         contentDescription = "",

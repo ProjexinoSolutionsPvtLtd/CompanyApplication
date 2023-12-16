@@ -1,15 +1,19 @@
 package com.spn.companyapplication.screens
 
 import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -33,10 +37,10 @@ import com.spn.companyapplication.ui.theme.CompanyApplicationTheme
 import com.spn.companyapplication.viewmodels.AddTaskViewModel
 import java.util.*
 
-class AddLead : ComponentActivity() {
+class AddTask : ComponentActivity() {
     @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        requestCameraPermission(this@AddLead)
+        requestCameraPermission(this@AddTask)
         val viewModel by viewModels<AddTaskViewModel>()
         super.onCreate(savedInstanceState)
         setContent {
@@ -54,8 +58,8 @@ class AddLead : ComponentActivity() {
                 ) {
                     Drawer(
                         title = "Add Lead",
-                        context = this@AddLead,
-                        activity = this@AddLead,
+                        context = this@AddTask,
+                        activity = this@AddTask,
                         content = {
                             LazyColumn(
                                 Modifier
@@ -113,11 +117,11 @@ class AddLead : ComponentActivity() {
                                         onChange = { viewModel.requirementChange(it) })
                                     Spacer(Modifier.height(10.dp))
                                     DateTimePicker(
-                                        context = this@AddLead,
+                                        context = this@AddTask,
                                         value = viewModel.dateTimeValue,
                                         label = "Date/Time",
                                         selectedDate = viewModel.dateTime,
-                                        onSelect = { viewModel.onDateTimeSelect(it, this@AddLead) }
+                                        onSelect = { viewModel.onDateTimeSelect(it, this@AddTask) }
                                     )
                                     Spacer(Modifier.height(10.dp))
                                     AddDocumentInput(
@@ -125,16 +129,16 @@ class AddLead : ComponentActivity() {
                                         LocalContext.current.contentResolver
                                     )
                                     Spacer(Modifier.height(20.dp))
-                                    AddImageInput(this@AddLead, viewModel)
+                                    AddImageInput(this@AddTask, viewModel)
                                     Spacer(Modifier.height(30.dp))
                                     Button(
                                         text = "Submit",
                                         enabled = viewModel.validate,
                                         onClick = {
-                                            viewModel.uploadLead(this@AddLead, this@AddLead)
+                                            viewModel.uploadLead(this@AddTask, this@AddTask)
 //                                        ContextCompat.startActivity(
-//                                            this@AddLead,
-//                                            Intent(this@AddLead, Home::class.java),
+//                                            this@AddTask,
+//                                            Intent(this@AddTask, Home::class.java),
 //                                            null
 //                                        )
                                         },

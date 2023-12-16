@@ -1,28 +1,17 @@
 package com.spn.companyapplication.components
 
 import ShowImage
-import android.Manifest.permission.CAMERA
-import android.app.Activity
-import android.app.Activity.RESULT_OK
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.provider.MediaStore
-import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalFocusManager
@@ -32,14 +21,12 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.createBitmap
 import androidx.core.graphics.toColorInt
 import com.spn.companyapplication.R
-import com.spn.companyapplication.viewmodels.AddLeadViewModel
+import com.spn.companyapplication.viewmodels.AddTaskViewModel
 
 @Composable
-fun AddImageInput(context: Context, viewModel: AddLeadViewModel) {
+fun AddImageInput(context: Context, viewModel: AddTaskViewModel) {
     val focusManager = LocalFocusManager.current
     val launcher =
         rememberLauncherForActivityResult(
