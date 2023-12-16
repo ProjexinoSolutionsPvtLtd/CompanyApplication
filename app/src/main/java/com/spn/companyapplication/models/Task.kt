@@ -7,8 +7,8 @@ data class Task(
     val name: String = "",
     val projectName: String = "",
     val modulesIncluded: String = "",
-    val assignTo: String = "",
+    val assignTo: List<String> = listOf(""),
     val email: String = "",
     val deadline: String = "",
-    val status: String = "",         //Opened, Closed, Contacted etc.
+    val status: String = "",         //Opened, In-Progress, Completed etc.
 )

@@ -1,5 +1,6 @@
 package com.spn.companyapplication.screens
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,6 +12,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,14 +32,41 @@ import com.spn.companyapplication.viewmodels.AddTaskViewModel
 import java.util.*
 
 class AddTask : ComponentActivity() {
+    @SuppressLint("UnrememberedMutableState")
     @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         val viewModel by viewModels<AddTaskViewModel>()
         super.onCreate(savedInstanceState)
         setContent {
-            viewModel.validation()
             if (viewModel.deadline == "") {
                 viewModel.setDefaultDate()
+            }
+            val extraFields = remember { mutableStateListOf("Assign To") }
+            val fieldValues = mutableStateListOf<String>()
+
+            fun updateFieldValue(index: Int, value: String) {
+                if (index < fieldValues.size) {
+                    fieldValues[index] = value
+                } else {
+                    fieldValues.add(value)
+                }
+            }
+
+            fun removeFieldValue(index: Int) {
+                if (index in fieldValues.indices) {
+                    fieldValues.removeAt(index)
+                }
+            }
+
+            fun toggleField(index: Int) {
+                if (index == 0) {
+                    extraFields.add("Assign To")
+                    viewModel.addAssignToChangeFunction()
+                } else {
+                    extraFields.removeAt(0)
+                    viewModel.removeLastAssignToChangeFunction()
+                    removeFieldValue(index)
+                }
             }
 
             val keyboardController = LocalSoftwareKeyboardController.current
@@ -95,10 +125,23 @@ class AddTask : ComponentActivity() {
                                         onSelect = { viewModel.onDateTimeSelect(it, this@AddTask) }
                                     )
                                     Spacer(Modifier.height(10.dp))
-                                    TextInput(
-                                        label = "Assign To",
-                                        value = viewModel.assignTo,
-                                        onChange = { viewModel.assignToChange(it) })
+                                    extraFields.forEachIndexed { index, field ->
+                                        TextInput(
+                                            label = field,
+                                            keyboardType = KeyboardType.Email,
+                                            value = fieldValues.getOrElse(index) { "" },
+                                            onChange = { newValue ->
+                                                updateFieldValue(index, newValue)
+                                            },
+                                            trailingIcon = if (index == 0) {
+                                                R.drawable.plus_square
+                                            } else {
+                                                R.drawable.minus_square
+                                            },
+                                            toggleField = { toggleField(index) }
+                                        )
+                                        Spacer(Modifier.height(10.dp))
+                                    }
                                     Spacer(Modifier.height(10.dp))
                                     TextInput(
                                         label = "Mail ID",
@@ -106,12 +149,17 @@ class AddTask : ComponentActivity() {
                                         onChange = { viewModel.emailChange(it) },
                                         keyboardType = KeyboardType.Email
                                     )
+
                                     Spacer(Modifier.height(50.dp))
                                     Button(
                                         text = "Add Task",
                                         enabled = viewModel.validate,
                                         onClick = {
-                                            viewModel.uploadTask(this@AddTask, this@AddTask)
+                                            viewModel.uploadTask(
+                                                this@AddTask,
+                                                this@AddTask,
+                                                fieldValues.toList()
+                                            )
 //                                        ContextCompat.startActivity(
 //                                            this@AddTask,
 //                                            Intent(this@AddTask, Home::class.java),
@@ -122,6 +170,7 @@ class AddTask : ComponentActivity() {
                                         uppercase = false,
                                         showLoader = viewModel.showButtonLoader
                                     )
+                                    Spacer(Modifier.height(250.dp))
                                 }
                             }
                         })

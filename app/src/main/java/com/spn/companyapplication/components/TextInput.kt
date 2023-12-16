@@ -31,6 +31,8 @@ import com.spn.companyapplication.R
 fun TextInput(
     label: String,
     icon: @Composable() (() -> Unit)? = null,
+    trailingIcon: Int? = null,
+    toggleField:( () -> Unit) ? =null,
     value: String,
     onChange: (String) -> Unit,
     imeAction: ImeAction = ImeAction.Next,
@@ -79,7 +81,7 @@ fun TextInput(
         ),
         enabled = enabled,
         trailingIcon = {
-            if (isPassword)
+            if (isPassword) {
                 IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
                     Icon(
                         painter = painterResource(id = if (passwordVisibility) R.drawable.ic_visibility else R.drawable.ic_visibility_off),
@@ -88,6 +90,21 @@ fun TextInput(
                         tint = Color(0xFFBDBDBD)
                     )
                 }
+            }
+            else if(trailingIcon != null){
+                IconButton(onClick = {
+                    if (toggleField != null) {
+                        toggleField()
+                    }
+                }) {
+                    Icon(
+                        painter = painterResource(id = trailingIcon),
+                        contentDescription = "add_assign",
+                        modifier = Modifier.size(25.dp),
+                        tint = Color.Black
+                    )
+                }
+            }
         },
         visualTransformation = if (isPassword && !passwordVisibility) PasswordVisualTransformation() else VisualTransformation.None
     )

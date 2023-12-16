@@ -115,7 +115,9 @@ fun TaskCard(task: Task, context: Context, viewModel: ViewTaskViewModel, activit
 
                     Spacer(Modifier.height(5.dp))
 
-                    iconWithTextTask(icon = R.drawable.assign_to, text = task.assignTo)
+                    task.assignTo.forEach { assignee ->
+                        iconWithTextTask(icon = R.drawable.assign_to, text = assignee)
+                    }
 
                     Spacer(Modifier.height(5.dp))
                 }
@@ -218,7 +220,7 @@ fun InitialsIconTask(
     name: String,
     backgroundColor: Color,
     contentColor: Color,
-    size: Int = 80,
+    size: Int = 50,
     icon: ImageVector? = null,
 ) {
     Surface(
@@ -242,7 +244,7 @@ fun InitialsIconTask(
                     text = getInitialsTask(name),
                     style = TextStyle(
                         fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        fontSize = 40.sp,
+                        fontSize = 25.sp,
                         color = contentColor
                     )
                 )

@@ -42,6 +42,7 @@ class AddTaskViewModel : ViewModel() {
     var dateTime: Calendar by mutableStateOf(Calendar.getInstance())
 
 
+
     var name by mutableStateOf("")
     var projectName by mutableStateOf("")
     var modulesIncluded by mutableStateOf("")
@@ -52,31 +53,40 @@ class AddTaskViewModel : ViewModel() {
 
     var validate by mutableStateOf(false)
 
-    val firebaseAuth = FirebaseAuth.getInstance()
     val firebaseFirestore = FirebaseFirestore.getInstance()
-    val storageReference = FirebaseStorage.getInstance().reference
 
-
-    val subjectState =  mutableStateOf("")
-    val emailState =  mutableStateOf("")
-    val contentState =  mutableStateOf("")
-    val buttonText =  mutableStateOf("")
-    val emailErrorState =  mutableStateOf("")
 
     fun nameChange(text: String) {
         name = text
+        validation()
     }
 
     fun projectNameChange(text: String) {
         projectName = text
+        validation()
     }
 
     fun modulesIncludedChange(text: String) {
         modulesIncluded = text
+        validation()
     }
 
     fun emailChange(text: String) {
         email = text
+        validation()
+    }
+
+    private val assignToChangeFunctions: MutableList<(String) -> Unit> = mutableListOf()
+
+    fun getAssignToChangeFunction(index: Int): (String) -> Unit {
+        return assignToChangeFunctions.getOrElse(index) { { _ -> /* Default empty function */ } }
+    }
+    fun addAssignToChangeFunction() {
+        assignToChangeFunctions.add { newValue -> assignTo = newValue }
+    }
+
+    fun removeLastAssignToChangeFunction() {
+        assignToChangeFunctions.removeAt(assignToChangeFunctions.lastIndex)
     }
 
     fun assignToChange(text: String) {
@@ -99,11 +109,12 @@ class AddTaskViewModel : ViewModel() {
             )
             Toast.makeText(context, centeredText, Toast.LENGTH_SHORT).show()
         }
+        validation()
     }
 
-    fun uploadTask(context: Context, activity: Activity) {
+    fun uploadTask(context: Context, activity: Activity, assignToList: List<String>) {
         showButtonLoader = true
-        taskDataUpload(context, activity)
+        taskDataUpload(context, activity, assignToList)
     }
 
     fun setDefaultDate() {
@@ -112,13 +123,13 @@ class AddTaskViewModel : ViewModel() {
         deadline = dateFormat.format(currentDate)
     }
 
-    fun taskDataUpload(context: Context, activity: Activity) {
+    fun taskDataUpload(context: Context, activity: Activity,assignToList: List<String>) {
         val task = hashMapOf(
             "name" to name,
             "modulesIncluded" to modulesIncluded,
             "projectName" to projectName,
             "email" to email,
-            "assignTo" to assignTo,
+            "assignTo" to assignToList,
             "deadline" to deadline,
             "status" to "Opened"
         )
@@ -129,8 +140,11 @@ class AddTaskViewModel : ViewModel() {
                 .addOnSuccessListener {
                     Toast.makeText(context, "Task Added Successfully", Toast.LENGTH_SHORT).show()
                     val content = "You have been assigned a new task! Here are the details: -\n\nProject Name: $projectName\nTask Name: $name\nModules Included: $modulesIncluded\nDeadline: $deadline"
-                    sendEmail(assignTo, "New Task Assigned", content, context, onSuccess = {
-                    })
+                    assignToList.forEach { assignedUser ->
+                        sendEmail(assignedUser, "New Task Assigned", content, context) {
+                            // onSuccess logic, if needed
+                        }
+                    }
                     activity.startActivity(Intent(activity, Home::class.java))
                 }
 
@@ -141,8 +155,11 @@ class AddTaskViewModel : ViewModel() {
     }
 
     fun validation() {
+//        val allFieldsFilled = name.isNotBlank() && projectName.isNotBlank() && modulesIncluded.isNotBlank() && email.isNotBlank() && deadline.isNotBlank()
+//        val validEmails = fieldValues.all { isValidEmail(it.trim()) }
+//        validate = allFieldsFilled && validEmails
         validate =
-            !(name == "" || projectName == "" || modulesIncluded == "" || email == "" || !isValidEmail(email) || assignTo == "" || !isValidEmail(assignTo) || deadline == "")
+            !(name == "" || projectName == "" || modulesIncluded == "" || email == "" || !isValidEmail(email) || deadline == "")
     }
 
     fun isValidEmail(email: String): Boolean {
