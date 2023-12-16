@@ -46,7 +46,7 @@ fun TaskCard(task: Task, context: Context, viewModel: ViewTaskViewModel, activit
         StatusUpdateDialog(
             showDialog = viewModel.showUpdateDialog,
             onDismiss = { viewModel.showUpdateDialog = false },
-            onChange = { viewModel.showUpdateDialog = !viewModel.showUpdateDialog },
+            onChange = { viewModel.showStatusUpdateOptions =  !viewModel.showStatusUpdateOptions},
             onCommentsChange = { viewModel.commentForStatusUpdateChange(it) },
             onStatusUpdateDropdownOptionSelect = { viewModel.onStatusUpdateDropdownOptionSelect(it) },
             hint = viewModel.selectedStatusForUpdate,
