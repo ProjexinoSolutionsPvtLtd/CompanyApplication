@@ -25,7 +25,7 @@ import com.spn.companyapplication.components.*
 import com.spn.companyapplication.ui.theme.CompanyApplicationTheme
 import com.spn.companyapplication.viewmodels.ViewLeadViewModel
 
-class ViewLead : ComponentActivity() {
+class ViewTasks : ComponentActivity() {
     @OptIn(ExperimentalComposeUiApi::class)
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
