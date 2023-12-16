@@ -2,6 +2,7 @@ package com.spn.companyapplication.viewmodels
 
 import android.app.Activity
 import android.content.ContentResolver
+import androidx.compose.runtime.remember
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
@@ -17,6 +18,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
@@ -25,6 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.spn.companyapplication.R
 import com.spn.companyapplication.screens.Home
+import com.spn.companyapplication.services.sendEmail
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -53,6 +56,13 @@ class AddTaskViewModel : ViewModel() {
     val firebaseFirestore = FirebaseFirestore.getInstance()
     val storageReference = FirebaseStorage.getInstance().reference
 
+
+    val subjectState =  mutableStateOf("")
+    val emailState =  mutableStateOf("")
+    val contentState =  mutableStateOf("")
+    val buttonText =  mutableStateOf("")
+    val emailErrorState =  mutableStateOf("")
+
     fun nameChange(text: String) {
         name = text
     }
@@ -79,7 +89,7 @@ class AddTaskViewModel : ViewModel() {
         if (!time.before(currentDate)) {
             deadline = dateTimeFormat.format(time.time)
         } else {
-            val toast = "Date/Time cannot be set to a date earlier than the current one"
+            val toast = "Deadline cannot be set to a date earlier than the current one"
             val centeredText = SpannableString(toast)
             centeredText.setSpan(
                 AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
@@ -89,67 +99,6 @@ class AddTaskViewModel : ViewModel() {
             )
             Toast.makeText(context, centeredText, Toast.LENGTH_SHORT).show()
         }
-    }
-
-    val getDocumentName: (ContentResolver, Uri) -> String = { contentResolver, uri ->
-        var displayName: String? = null
-        val cursor: Cursor? = contentResolver.query(uri, null, null, null, null)
-        cursor?.use {
-            if (it.moveToFirst()) {
-                displayName = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-            }
-        }
-        cursor?.close()
-        displayName ?: ""
-    }
-
-
-    val getDocumentSize: (ContentResolver, Uri) -> Long = { contentResolver, uri ->
-        var size: Long? = null
-        val cursor: Cursor? = contentResolver.query(uri, null, null, null, null)
-        cursor?.use {
-            if (it.moveToFirst()) {
-                size = it.getLong(it.getColumnIndex(OpenableColumns.SIZE))
-            }
-        }
-        cursor?.close()
-        size ?: 0
-    }
-
-    val getDocumentMimeType: (ContentResolver, Uri) -> String = { contentResolver, uri ->
-        var type = ""
-        var list = contentResolver.getType(uri)?.split("/")!!
-
-        for (a in list.indices) {
-            if (a == 1) {
-                type = list[a]
-                Log.d("TAG99", type)
-            }
-        }
-        contentResolver.getType(uri)?.split("/")!![1].uppercase()
-    }
-
-    fun getCurrentUserRole(activity: Activity): String {
-        val sharedPreferences =
-            activity.getSharedPreferences(R.string.app_name.toString(), Context.MODE_PRIVATE)
-        return sharedPreferences.getString("CurrentUserRole", "").toString()
-    }
-
-    fun getUriFromBitmap(context: Context, bitmap: Bitmap): Uri? {
-        // Create a file in the external storage directory (or app-specific cache directory)
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        val fileName = "IMG_$timeStamp.jpg"
-        val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        val imageFile = File.createTempFile(fileName, ".jpg", storageDir)
-
-        // Convert bitmap to JPEG and write it to the file
-        val outputStream = FileOutputStream(imageFile)
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-        outputStream.flush()
-        outputStream.close()
-
-        // Get the URI for the file using FileProvider
-        return FileProvider.getUriForFile(context, "${context.packageName}.provider", imageFile)
     }
 
     fun uploadTask(context: Context, activity: Activity) {
@@ -179,11 +128,16 @@ class AddTaskViewModel : ViewModel() {
             firebaseFirestore.collection("tasks").document(it.id).update(taskId)
                 .addOnSuccessListener {
                     Toast.makeText(context, "Task Added Successfully", Toast.LENGTH_SHORT).show()
+                    val content = "You have been assigned a new task! Here are the details: -\n\nProject Name: $projectName\nTask Name: $name\nModules Included: $modulesIncluded\nDeadline: $deadline"
+                    sendEmail(assignTo, "New Task Assigned", content, context, onSuccess = {
+                    })
                     activity.startActivity(Intent(activity, Home::class.java))
                 }
+
         }.addOnFailureListener { e ->
             Log.d("TAG225", e.toString())
         }
+
     }
 
     fun validation() {
