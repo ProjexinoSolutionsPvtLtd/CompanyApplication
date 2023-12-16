@@ -35,11 +35,19 @@ import com.spn.companyapplication.viewmodels.ViewLeadViewModel
 fun StatusUpdateDialog(
     showDialog: Boolean,
     onDismiss: () -> Unit,
-    viewModel: ViewLeadViewModel,
-    context: Context,
-    activity: Activity
+    onChange: () -> Unit,
+    onCommentsChange: (String) -> Unit,
+    onStatusUpdateDropdownOptionSelect: (String) -> Unit,
+    hint: String,
+    showStatusUpdateOptions: Boolean,
+    setShowStatusUpdateOption: (Boolean) -> Unit,
+    filterOptions: List<String>,
+    commentForStatusUpdate: String,
+    onSubmit: () -> Unit
 ) {
-    val rotationState by animateFloatAsState(targetValue = if (viewModel.showStatusUpdateOptions) 180f else 0f)
+    val rotationState by animateFloatAsState(
+        targetValue = if (showStatusUpdateOptions) 180f else 0f
+    )
     if (showDialog) {
         Dialog(onDismissRequest = { onDismiss.invoke() }) {
             Box(
@@ -48,8 +56,7 @@ fun StatusUpdateDialog(
                     .background(Color.White)
             ) {
                 Column(
-                    modifier = Modifier
-                        .padding(16.dp)
+                    modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
                         "Status Update", style = TextStyle(
@@ -60,29 +67,25 @@ fun StatusUpdateDialog(
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     Dropdown(
-                        onDropdownMenuChange = { viewModel.showStatusUpdateOptions =  !viewModel.showStatusUpdateOptions},
-                        hint = viewModel.selectedStatusForUpdate,
+                        onDropdownMenuChange = { onChange.invoke() },
+                        hint = hint,
                         rotationState = rotationState,
-                        showOptions = viewModel.showStatusUpdateOptions,
-                        onDismiss = { viewModel.showStatusUpdateOptions = false },
-                        onSelected = { viewModel.onStatusUpdateDropdownOptionSelect(it) },
-                        options = viewModel.filterOptions
+                        showOptions = showStatusUpdateOptions,
+                        onDismiss = { setShowStatusUpdateOption(false) },
+                        onSelected = { onStatusUpdateDropdownOptionSelect(it) },
+                        options = filterOptions
                     )
-                    TextInput(
-                        label = "Comments",
-                        value = viewModel.commentForStatusUpdate,
-                        onChange = { viewModel.commentForStatusUpdateChange(it) })
+                    TextInput(label = "Comments",
+                        value = commentForStatusUpdate,
+                        onChange = { onCommentsChange(it) })
 
                     Spacer(modifier = Modifier.height(20.dp))
 
                     Button(
                         text = "Update Status",
-                        enabled = viewModel.selectedStatusForUpdate != "Select Status" && viewModel.commentForStatusUpdate != "",
+                        enabled = hint != "Select Status" && commentForStatusUpdate != "",
                         onClick = {
-                            viewModel.updateStatus(viewModel.currentLeadId, context)
-                            viewModel.fetchLeads(activity)
-
-                            viewModel.clearDialogDetails()
+                            onSubmit.invoke()
                         },
                         color = Color(("#130b5c").toColorInt()),
                         uppercase = false,

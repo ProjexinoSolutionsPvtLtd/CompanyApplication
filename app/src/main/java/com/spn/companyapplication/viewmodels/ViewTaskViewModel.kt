@@ -13,25 +13,17 @@ import android.text.SpannableString
 import android.text.style.AlignmentSpan
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.capitalize
 import androidx.core.graphics.toColorInt
 import androidx.lifecycle.ViewModel
-import android.os.Environment
 import com.itextpdf.text.Paragraph
 import com.itextpdf.text.pdf.PdfWriter
-import java.io.File
-import java.io.FileOutputStream
-import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
 import com.spn.companyapplication.R
-import com.spn.companyapplication.models.Lead
+import com.spn.companyapplication.models.Task
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
@@ -43,7 +35,7 @@ import java.util.*
 
 
 class ViewTaskViewModel() : ViewModel() {
-    val filterOptions = listOf("Opened", "Contacted", "Hold", "Lost/Closed", "Converted")
+    val filterOptions = listOf("Opened", "In-Progress", "Testing", "Completed")
     val dateSortOptions = listOf("Ascending", "Descending")
     val downloadOptions = listOf("Excel", "PDF")
     var showOptions by mutableStateOf(false)
@@ -59,26 +51,29 @@ class ViewTaskViewModel() : ViewModel() {
     var selectedOption by mutableStateOf("")
     var dateSortSelectedOption by mutableStateOf("")
 
-    var currentLeadId by mutableStateOf("")
+    var currentTaskId by mutableStateOf("")
     var selectedStatusForUpdate by mutableStateOf("Select Status")
     var downloadOption by mutableStateOf("")
     var commentForStatusUpdate by mutableStateOf("")
     var showStatusUpdateOptions by mutableStateOf(false)
+    val setShowStatusUpdateOptions: (Boolean) -> Unit = { status ->
+        showStatusUpdateOptions = status
+    }
 
     var showContent by mutableStateOf(false)
 
     var showUpdateDialog by mutableStateOf(false)
 
-    var leadsList = mutableListOf<Lead>()
-    var completeLeadsList = mutableListOf<Lead>()
+    var tasksList = mutableListOf<Task>()
+    var completeTasksList = mutableListOf<Task>()
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    fun generatePDF(leadsList: List<Lead>, context: Context) {
+    fun generatePDF(tasksList: List<Task>, context: Context) {
         val document = Document()
 
         try {
             val contentValues = ContentValues()
-            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "Leads.pdf")
+            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "Tasks.pdf")
             contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
 
             val uri = context.contentResolver.insert(
@@ -92,17 +87,14 @@ class ViewTaskViewModel() : ViewModel() {
 
                 document.open()
 
-                for (lead in leadsList) {
-                    document.add(Paragraph("Name: ${lead.name}"))
-                    document.add(Paragraph("Role: ${lead.role}"))
-                    document.add(Paragraph("Number: ${lead.number}"))
-                    document.add(Paragraph("Organization: ${lead.organization}"))
-                    document.add(Paragraph("Email: ${lead.email}"))
-                    document.add(Paragraph("Requirement: ${lead.requirement}"))
-                    document.add(Paragraph("Address: ${lead.address}"))
-                    document.add(Paragraph("Date & Time: ${lead.dateTimeValue}"))
-                    document.add(Paragraph("Status: ${lead.status}"))
-                    document.add(Paragraph("Created By: ${lead.createdBy}"))
+                for (task in tasksList) {
+                    document.add(Paragraph("Name: ${task.name}"))
+                    document.add(Paragraph("Project Name: ${task.projectName}"))
+                    document.add(Paragraph("Modules Included: ${task.modulesIncluded}"))
+                    document.add(Paragraph("Deadline: ${task.deadline}"))
+                    document.add(Paragraph("Assign To: ${task.assignTo}"))
+                    document.add(Paragraph("Mail ID: ${task.email}"))
+                    document.add(Paragraph("Status: ${task.status}"))
                     document.add(Paragraph("\n"))
                 }
 
@@ -120,8 +112,12 @@ class ViewTaskViewModel() : ViewModel() {
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    fun exportLeadsToExcel(leads: List<Lead>, contentResolver: ContentResolver, activity: Activity) {
-        val fileName = "Leads.xlsx"
+    fun exportTasksToExcel(
+        tasks: List<Task>,
+        contentResolver: ContentResolver,
+        activity: Activity
+    ) {
+        val fileName = "Tasks.xlsx"
         val contentValues = ContentValues()
         contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
         contentValues.put(
@@ -138,24 +134,24 @@ class ViewTaskViewModel() : ViewModel() {
                 if (outputStream != null) {
                     // Now you can write to the Excel file using POI
                     val workbook: Workbook = XSSFWorkbook()
-                    val sheet: Sheet = workbook.createSheet("Leads")
+                    val sheet: Sheet = workbook.createSheet("Tasks")
 
                     val headerRow: Row = sheet.createRow(0)
-                    val leadProperties =
-                        Lead::class.java.declaredFields.filter { it.name != "\$stable" && it.name != "id" && it.name != "documentUrl" && it.name != "documentName" && it.name != "documentType" && it.name != "imageUrl"}
-                    for ((index, property) in leadProperties.withIndex()) {
+                    val taskProperties =
+                        Task::class.java.declaredFields.filter { it.name != "\$stable" && it.name != "id" && it.name != "documentUrl" && it.name != "documentName" && it.name != "documentType" && it.name != "imageUrl" }
+                    for ((index, property) in taskProperties.withIndex()) {
                         val cell = headerRow.createCell(index)
                         cell.setCellValue(property.name.capitalize())
                     }
 
-                    for ((rowIndex, lead) in leads.withIndex()) {
+                    for ((rowIndex, task) in tasks.withIndex()) {
                         val dataRow = sheet.createRow(rowIndex + 1)
-                        for ((columnIndex, property) in leadProperties.withIndex()) {
+                        for ((columnIndex, property) in taskProperties.withIndex()) {
                             val cell = dataRow.createCell(columnIndex)
 
-                            // Set cell value based on lead property type
+                            // Set cell value based on task property type
                             property.isAccessible = true
-                            val value = property.get(lead)
+                            val value = property.get(task)
                             when (value) {
                                 is String -> cell.setCellValue(value)
                                 is Int -> cell.setCellValue(value.toDouble())
@@ -174,7 +170,10 @@ class ViewTaskViewModel() : ViewModel() {
             val toast = "Excel File Generated Successfully"
             val centeredText = SpannableString(toast)
             centeredText.setSpan(
-                AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0, toast.length - 1, Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
+                0,
+                toast.length - 1,
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
             )
             Toast.makeText(activity, centeredText, Toast.LENGTH_SHORT).show()
         } catch (e: IOException) {
@@ -182,33 +181,30 @@ class ViewTaskViewModel() : ViewModel() {
         }
     }
 
-    fun createTextFromLeadList(activity: Activity) {
+    fun createTextFromTaskList(activity: Activity) {
         val builder = StringBuilder()
 
-        for (lead in leadsList) {
-            builder.append("Name: ${lead.name}\n")
-            builder.append("Role: ${lead.role}\n")
-            builder.append("Number: ${lead.number}\n")
-            builder.append("Organization: ${lead.organization}\n")
-            builder.append("Email: ${lead.email}\n")
-            builder.append("Requirement: ${lead.requirement}\n")
-            builder.append("Address: ${lead.address}\n")
-            builder.append("Date & Time: ${lead.dateTimeValue}\n")
-            builder.append("Status: ${lead.status}\n")
-            builder.append("\n\n") // Separate each lead
+        for (task in tasksList) {
+            builder.append("Name: ${task.name}\n")
+            builder.append("Project Name: ${task.projectName}\n")
+            builder.append("Modules Included: ${task.modulesIncluded}\n")
+            builder.append("Deadline: ${task.deadline}\n")
+            builder.append("Email: ${task.email}\n")
+            builder.append("Assigned To: ${task.assignTo}\n")
+            builder.append("Status: ${task.status}\n")
+            builder.append("\n\n") // Separate each task
         }
 
-        shareLeadListViaText(activity, builder.toString())
+        shareTaskListViaText(activity, builder.toString())
     }
 
-    fun shareLeadListViaText(activity: Activity, text: String) {
+    fun shareTaskListViaText(activity: Activity, text: String) {
         val shareIntent = Intent(Intent.ACTION_SEND)
         shareIntent.type = "text/plain"
         shareIntent.putExtra(Intent.EXTRA_TEXT, text)
 
-        activity.startActivity(Intent.createChooser(shareIntent, "Share Lead List"))
+        activity.startActivity(Intent.createChooser(shareIntent, "Share Task List"))
     }
-
 
 
     fun hideLoader() {
@@ -219,65 +215,65 @@ class ViewTaskViewModel() : ViewModel() {
         showContent = false
     }
 
-    fun onStatusFilterDropdownOptionSelect(text: String){
+    fun onStatusFilterDropdownOptionSelect(text: String) {
         selectedOption = text
     }
 
-    fun onDateSortDropdownOptionSelect(text: String){
+    fun onDateSortDropdownOptionSelect(text: String) {
         dateSortSelectedOption = text
     }
 
-    fun onStatusUpdateDropdownOptionSelect(text: String){
+    fun onStatusUpdateDropdownOptionSelect(text: String) {
         selectedStatusForUpdate = text
     }
 
-    fun onDownloadOptionSelect(text: String){
+    fun onDownloadOptionSelect(text: String) {
         downloadOption = text
     }
 
-    fun fetchLeads(activity: Activity) {
+    fun fetchTasks(activity: Activity) {
         showLoader()
-        leadsList.clear()
+        tasksList.clear()
         val firestore = FirebaseFirestore.getInstance()
-        val leadsCollection = firestore.collection("leads")
+        val tasksCollection = firestore.collection("tasks")
 
-        leadsCollection.get()
+        tasksCollection.get()
             .addOnSuccessListener { querySnapshot ->
                 for (document in querySnapshot.documents) {
-                    val lead = document.toObject(Lead::class.java)
-                    lead?.let {
-                        leadsList.add(it)
-                        completeLeadsList.add(it)
+                    val task = document.toObject(Task::class.java)
+                    task?.let {
+                        tasksList.add(it)
+                        completeTasksList.add(it)
                     }
                 }
 
-                leadsList.forEach {
+                tasksList.forEach {
                     Log.d("TAG116", it.name)
                 }
 
-                var _leadsList: MutableList<Lead> = mutableListOf()
-                _leadsList.addAll(leadsList)
+                var _tasksList: MutableList<Task> = mutableListOf()
+                _tasksList.addAll(tasksList)
 
                 //Logic for bifurcating lists according to User Type
-                if (getCurrentUserRole(activity) != "Admin") {
-                    _leadsList.forEach {
-                        if (it.createdBy == "Admin") {
-                            leadsList.remove(it)
-                        }
-                    }
-                }
+//                if (getCurrentUserRole(activity) != "Admin") {
+//                    _tasksList.forEach {
+//                        if (it.createdBy == "Admin") {
+//                            tasksList.remove(it)
+//                        }
+//                    }
+//                }
 
                 //Logic for bifurcating lists according to Status Filter Option
                 if (selectedOption != "") {
-                    leadsList.forEach {
-                        if (!_leadsList.contains(it)) {
-                            _leadsList.add(it)
+                    tasksList.forEach {
+                        if (!_tasksList.contains(it)) {
+                            _tasksList.add(it)
                         }
                     }
 
-                    _leadsList.forEach {
+                    _tasksList.forEach {
                         if (it.status != selectedOption) {
-                            leadsList.remove(it)
+                            tasksList.remove(it)
                         }
                     }
                 }
@@ -285,17 +281,17 @@ class ViewTaskViewModel() : ViewModel() {
                 hideLoader()
             }
             .addOnFailureListener { exception ->
-                Log.e("TAG", "Error fetching leads: $exception")
+                Log.e("TAG", "Error fetching tasks: $exception")
 
                 hideLoader()
             }
     }
 
-    fun getStatusFilterSelectedOption(): String{
+    fun getStatusFilterSelectedOption(): String {
         return selectedOption
     }
 
-    fun getDateSortTypeSelectedOption(): String{
+    fun getDateSortTypeSelectedOption(): String {
         return dateSortSelectedOption
     }
 
@@ -322,62 +318,64 @@ class ViewTaskViewModel() : ViewModel() {
             Toast.makeText(context, centeredText, Toast.LENGTH_SHORT).show()
         }
     }
-    fun sortLeadsByDate(): List<Lead> {
+
+    fun sortTasksByDate(): List<Task> {
         val dateFormat = SimpleDateFormat("HH:mm, dd-MMM-yyyy", Locale.getDefault())
 
-        val sortedLeads = if (dateSortSelectedOption == "Ascending") {
-            completeLeadsList.sortedBy { lead -> dateFormat.parse(lead.dateTimeValue) ?: Date() }
+        val sortedTasks = if (dateSortSelectedOption == "Ascending") {
+            completeTasksList.sortedBy { task -> dateFormat.parse(task.deadline) ?: Date() }
         } else {
-            completeLeadsList.sortedByDescending { lead -> dateFormat.parse(lead.dateTimeValue) ?: Date() }
+            completeTasksList.sortedByDescending { task ->
+                dateFormat.parse(task.deadline) ?: Date()
+            }
         }
 
         showLoader()
 
-        leadsList.clear()
-        leadsList.addAll(sortedLeads)
+        tasksList.clear()
+        tasksList.addAll(sortedTasks)
 
         hideLoader()
 
-        return sortedLeads
+        return sortedTasks
     }
+
     fun onSearch(searchQuery: String) {
         showLoader()
 
         val query = searchQuery.lowercase()
 
         if (query != "" || query.isNotBlank() || query.isNotEmpty()) {
-            val _leadsList = mutableListOf<Lead>()
-            _leadsList.addAll(completeLeadsList)
+            val _tasksList = mutableListOf<Task>()
+            _tasksList.addAll(completeTasksList)
 
-            leadsList.clear()
+            tasksList.clear()
 
-            leadsList = _leadsList.filter { lead ->
-                lead.name.lowercase().contains(query) ||
-//                        lead.role.lowercase().contains(query) ||
-//                        lead.requirement.lowercase().contains(query) ||
-                        lead.status.lowercase().contains(query)
-//                        lead.organization.lowercase().contains(query)
-            } as MutableList<Lead>
+            tasksList = _tasksList.filter { task ->
+                task.name.lowercase().contains(query) ||
+//                        task.role.lowercase().contains(query) ||
+//                        task.requirement.lowercase().contains(query) ||
+                        task.status.lowercase().contains(query)
+//                        task.organization.lowercase().contains(query)
+            } as MutableList<Task>
         } else {
-            leadsList.clear()
-            leadsList.addAll(completeLeadsList)
+            tasksList.clear()
+            tasksList.addAll(completeTasksList)
         }
 
         hideLoader()
     }
 
-    fun updateStatus(leadId: String, context: Context) {
+    fun updateStatus(taskId: String, context: Context) {
         val firebaseFirestore = FirebaseFirestore.getInstance()
 
-//        Log.d("TAG219", lead.id)
-
-        val leadReference = firebaseFirestore.collection("leads").document(leadId)
+        val taskReference = firebaseFirestore.collection("tasks").document(taskId)
 
         val updates = mapOf(
             "status" to selectedStatusForUpdate
         )
 
-        leadReference.update(updates)
+        taskReference.update(updates)
             .addOnSuccessListener {
 //                Toast.makeText(context, "Status Updated", Toast.LENGTH_SHORT).show()
             }
@@ -397,7 +395,7 @@ class ViewTaskViewModel() : ViewModel() {
     }
 
     fun getStatusColor(status: String): androidx.compose.ui.graphics.Color {
-        when (status){
+        when (status) {
             "Opened" -> return Color(("#008080").toColorInt()).copy(0.5f)
             "Contacted" -> return Color(("#191744").toColorInt()).copy(0.5f)
             "Hold" -> return Color(("#0054a6").toColorInt()).copy(0.5f)
@@ -408,4 +406,5 @@ class ViewTaskViewModel() : ViewModel() {
 
         return Color(("#103b5c").toColorInt()).copy(0.5f)
     }
+
 }

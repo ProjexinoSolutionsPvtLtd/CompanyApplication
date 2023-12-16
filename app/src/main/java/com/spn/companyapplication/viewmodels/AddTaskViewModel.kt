@@ -35,7 +35,7 @@ import java.util.Locale
 class AddTaskViewModel : ViewModel() {
     private val dateTimeFormat = SimpleDateFormat("HH:mm, dd-MMM-yyyy")
 
-    var dateTimeValue by mutableStateOf("")
+    var deadline by mutableStateOf("")
     var dateTime: Calendar by mutableStateOf(Calendar.getInstance())
 
 
@@ -77,7 +77,7 @@ class AddTaskViewModel : ViewModel() {
         dateTime = time
         val currentDate = Calendar.getInstance()
         if (!time.before(currentDate)) {
-            dateTimeValue = dateTimeFormat.format(time.time)
+            deadline = dateTimeFormat.format(time.time)
         } else {
             val toast = "Date/Time cannot be set to a date earlier than the current one"
             val centeredText = SpannableString(toast)
@@ -160,24 +160,23 @@ class AddTaskViewModel : ViewModel() {
     fun setDefaultDate() {
         val dateFormat = SimpleDateFormat("HH:mm, dd-MMM-yyyy", Locale.getDefault())
         val currentDate = Date()
-        dateTimeValue = dateFormat.format(currentDate)
+        deadline = dateFormat.format(currentDate)
     }
 
     fun taskDataUpload(context: Context, activity: Activity) {
         val task = hashMapOf(
             "name" to name,
-            "role" to modulesIncluded,
-            "organization" to projectName,
+            "modulesIncluded" to modulesIncluded,
+            "projectName" to projectName,
             "email" to email,
-            "address" to assignTo,
-            "dateTimeValue" to dateTimeValue,
-            "status" to "Opened",
-            "createdBy" to getCurrentUserRole(activity),
+            "assignTo" to assignTo,
+            "deadline" to deadline,
+            "status" to "Opened"
         )
 
         firebaseFirestore.collection("tasks").add(task).addOnSuccessListener {
-            val leadId = mapOf("id" to it.id)
-            firebaseFirestore.collection("tasks").document(it.id).update(leadId)
+            val taskId = mapOf("id" to it.id)
+            firebaseFirestore.collection("tasks").document(it.id).update(taskId)
                 .addOnSuccessListener {
                     Toast.makeText(context, "Task Added Successfully", Toast.LENGTH_SHORT).show()
                     activity.startActivity(Intent(activity, Home::class.java))
@@ -189,7 +188,7 @@ class AddTaskViewModel : ViewModel() {
 
     fun validation() {
         validate =
-            !(name == "" || projectName == "" || modulesIncluded == "" || email == "" || !isValidEmail(email) || assignTo == "" || dateTimeValue == "")
+            !(name == "" || projectName == "" || modulesIncluded == "" || email == "" || !isValidEmail(email) || assignTo == "" || !isValidEmail(assignTo) || deadline == "")
     }
 
     fun isValidEmail(email: String): Boolean {

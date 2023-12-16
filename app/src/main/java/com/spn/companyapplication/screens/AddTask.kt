@@ -35,7 +35,7 @@ class AddTask : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             viewModel.validation()
-            if (viewModel.dateTimeValue == "") {
+            if (viewModel.deadline == "") {
                 viewModel.setDefaultDate()
             }
 
@@ -89,7 +89,7 @@ class AddTask : ComponentActivity() {
                                     Spacer(Modifier.height(10.dp))
                                     DateTimePicker(
                                         context = this@AddTask,
-                                        value = viewModel.dateTimeValue,
+                                        value = viewModel.deadline,
                                         label = "Deadline to complete",
                                         selectedDate = viewModel.dateTime,
                                         onSelect = { viewModel.onDateTimeSelect(it, this@AddTask) }

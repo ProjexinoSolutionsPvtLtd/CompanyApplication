@@ -4,7 +4,6 @@ import ShowImage
 import android.app.Activity
 import android.content.Context
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -19,7 +18,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -27,13 +25,12 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
-import coil.compose.rememberImagePainter
 import com.spn.companyapplication.R
-import com.spn.companyapplication.models.Lead
-import com.spn.companyapplication.viewmodels.ViewLeadViewModel
+import com.spn.companyapplication.models.Task
+import com.spn.companyapplication.viewmodels.ViewTaskViewModel
 
 @Composable
-fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel, activity: Activity) {
+fun TaskCard(task: Task, context: Context, viewModel: ViewTaskViewModel, activity: Activity) {
     var isExpanded by remember { mutableStateOf(false) }
     val rotationState by animateFloatAsState(targetValue = if (isExpanded) 180f else 0f)
 
@@ -58,8 +55,8 @@ fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel, activit
             filterOptions = viewModel.filterOptions,
             commentForStatusUpdate = viewModel.commentForStatusUpdate,
             onSubmit = {
-                viewModel.updateStatus(viewModel.currentLeadId, context)
-                viewModel.fetchLeads(activity)
+                viewModel.updateStatus(viewModel.currentTaskId, context)
+                viewModel.fetchTasks(activity)
                 viewModel.clearDialogDetails()
             }
         )
@@ -72,8 +69,8 @@ fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel, activit
     ) {
         Column(Modifier.padding(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                InitialsIconLead(
-                    name = lead.name,
+                InitialsIconTask(
+                    name = task.name,
                     backgroundColor = Color.LightGray,
                     contentColor = Color.DarkGray
                 )
@@ -82,7 +79,7 @@ fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel, activit
 
                 Column {
                     Text(
-                        lead.name, style = TextStyle(
+                        task.name, style = TextStyle(
                             fontFamily = FontFamily(Font(R.font.outfit_semibold)),
                             fontSize = 19.sp,
                             color = Color.Black
@@ -95,18 +92,18 @@ fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel, activit
                     Box(
                         Modifier
                             .clip(RoundedCornerShape(15.dp))
-                            .background(viewModel.getStatusColor(lead.status))
+                            .background(viewModel.getStatusColor(task.status))
                             .clickable(
                                 interactionSource = MutableInteractionSource(),
                                 indication = null,
                                 onClick = {
-                                    viewModel.currentLeadId = lead.id
+                                    viewModel.currentTaskId = task.id
                                     viewModel.showUpdateDialog = true
                                 }
                             )
                     ) {
                         Text(
-                            lead.status, style = TextStyle(
+                            task.status, style = TextStyle(
                                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                                 fontSize = 14.sp,
                                 color = Color.DarkGray
@@ -118,7 +115,7 @@ fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel, activit
 
                     Spacer(Modifier.height(5.dp))
 
-                    iconWithTextLead(icon = R.drawable.ic_number, text = lead.number)
+                    iconWithTextTask(icon = R.drawable.assign_to, text = task.assignTo)
 
                     Spacer(Modifier.height(5.dp))
                 }
@@ -132,7 +129,7 @@ fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel, activit
                         .fillMaxWidth()
                         .padding(top = 10.dp)
                 ) {
-                    headingWithValueLead(heading = "Email", value = lead.email, weight = 1f)
+                    headingWithValueTask(heading = "Project Name", value = task.projectName, weight = 0.5f)
                 }
 
                 Row(
@@ -140,93 +137,30 @@ fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel, activit
                         .fillMaxWidth()
                         .padding(top = 10.dp)
                 ) {
-                    headingWithValueLead(heading = "Role", value = lead.role, weight = 0.5f)
-                    headingWithValueLead(
-                        heading = "Organization",
-                        value = lead.organization,
-                        weight = 0.5f
-                    )
+                    headingWithValueTask(heading = "Mail ID", value = task.email, weight = 0.5f)
+                }
+
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp)
+                ) {
+                    headingWithValueTask(heading = "Modules Included", value = task.modulesIncluded, weight = 0.5f)
+
                 }
                 Row(
                     Modifier
                         .fillMaxWidth()
                         .padding(top = 10.dp)
                 ) {
-                    headingWithValueLead(
-                        heading = "Requirement",
-                        value = lead.requirement,
-                        weight = 0.5f
-                    )
-                    headingWithValueLead(
-                        heading = "Date/Time",
-                        value = lead.dateTimeValue,
+                    headingWithValueTask(
+                        heading = "Deadline",
+                        value = task.deadline,
                         weight = 0.5f
                     )
                 }
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(top = 10.dp)
-                ) {
-                    headingWithValueLead(heading = "Address", value = lead.address, weight = 1f)
-                }
 
-                if (lead.documentUrl != "") {
-                    Divider(
-                        color = Color.LightGray.copy(0.7f),
-                        modifier = Modifier.padding(vertical = 10.dp)
-                    )
 
-                    Column(modifier = Modifier
-                        .clickable(
-                            interactionSource = MutableInteractionSource(),
-                            indication = null,
-                            onClick = {
-                                viewModel.openDocument(context, lead.documentUrl)
-                            }
-                        )) {
-                        Text(
-                            "Document", style = TextStyle(
-                                fontFamily = FontFamily(Font(R.font.outfit_semibold)),
-                                fontSize = 14.sp,
-                                color = Color.Gray
-                            )
-                        )
-                        Spacer(modifier = Modifier.height(5.dp))
-                        DocumentCard(lead.documentName, lead.documentType)
-                        Spacer(modifier = Modifier.height(5.dp))
-                    }
-                }
-
-                if (lead.imageUrl != "") {
-                    Spacer(modifier = Modifier.height(10.dp))
-                    if (lead.documentUrl == "") {
-                        Divider(
-                            color = Color.LightGray.copy(0.7f),
-                            modifier = Modifier.padding(vertical = 10.dp)
-                        )
-                    }
-
-                    Text(
-                        "Image", style = TextStyle(
-                            fontFamily = FontFamily(Font(R.font.outfit_semibold)),
-                            fontSize = 14.sp,
-                            color = Color.Gray
-                        )
-                    )
-
-                    Image(
-                        rememberImagePainter(data = lead.imageUrl),
-                        contentDescription = "",
-                        modifier = Modifier
-                            .size(200.dp)
-                            .clickable {
-                                viewModel.currentImageUrl = lead.imageUrl
-                                viewModel.showImage = true
-                            },
-                        contentScale = ContentScale.Crop
-                    )
-                }
             }
 
             Row(
@@ -265,9 +199,9 @@ fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel, activit
 }
 
 @Composable
-fun iconWithTextLead(icon: Int, text: String) {
+fun iconWithTextTask(icon: Int, text: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(painter = painterResource(id = icon), "")
+        Icon(painter = painterResource(id = icon), "", modifier = Modifier.size(20.dp))
         Spacer(Modifier.width(10.dp))
         Text(
             text, style = TextStyle(
@@ -280,7 +214,7 @@ fun iconWithTextLead(icon: Int, text: String) {
 }
 
 @Composable
-fun InitialsIconLead(
+fun InitialsIconTask(
     name: String,
     backgroundColor: Color,
     contentColor: Color,
@@ -305,7 +239,7 @@ fun InitialsIconLead(
                 )
             } else {
                 Text(
-                    text = getInitialsLead(name),
+                    text = getInitialsTask(name),
                     style = TextStyle(
                         fontFamily = FontFamily(Font(R.font.outfit_regular)),
                         fontSize = 40.sp,
@@ -318,13 +252,13 @@ fun InitialsIconLead(
 }
 
 @Composable
-fun getInitialsLead(name: String): String {
+fun getInitialsTask(name: String): String {
     val initials = name.split(" ").joinToString("") { it.take(1) }
     return initials.take(2).toUpperCase()
 }
 
 @Composable
-fun RowScope.headingWithValueLead(heading: String, value: String, weight: Float) {
+fun RowScope.headingWithValueTask(heading: String, value: String, weight: Float) {
     Column(modifier = Modifier.weight(weight)) {
         Text(
             heading, style = TextStyle(

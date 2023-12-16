@@ -51,7 +51,7 @@ fun DropdownMenu(
                     onClickMap[value]!!.invoke()
                 }
 
-                if (onClickMap.containsKey(option)) {
+                else if (onClickMap.containsKey(option)) {
                     onClickMap[option]!!.invoke()
                 }
             }) {

@@ -14,16 +14,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.toColorInt
 import com.spn.companyapplication.components.*
 import com.spn.companyapplication.ui.theme.CompanyApplicationTheme
 import com.spn.companyapplication.viewmodels.ViewLeadViewModel
@@ -108,14 +105,14 @@ class ViewLead : ComponentActivity() {
                                             }
                                         }
                                     }
-                                    Filter(
+                                    LeadFilter(
                                         viewModel = viewModel,
                                         activity = this@ViewLead,
                                         contentResolver
                                     )
                                 }
                             } else {
-                                Loading()
+                                Loading("Fetching Leads")
                             }
                         })
                 }

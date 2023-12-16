@@ -16,7 +16,7 @@ import androidx.core.graphics.toColorInt
 import com.spn.companyapplication.R
 
 @Composable
-fun Loading(){
+fun Loading(text: String){
     Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         CircularProgressIndicator(
             modifier = Modifier.size(30.dp),
@@ -24,7 +24,7 @@ fun Loading(){
         )
         Spacer(modifier = Modifier.height(10.dp))
         Text(
-            "Fetching Leads", style = TextStyle(
+            text, style = TextStyle(
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                 fontSize = 14.sp,
                 color = Color.Gray

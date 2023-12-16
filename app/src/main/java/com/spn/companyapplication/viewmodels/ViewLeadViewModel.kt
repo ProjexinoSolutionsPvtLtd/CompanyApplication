@@ -64,6 +64,9 @@ class ViewLeadViewModel() : ViewModel() {
     var downloadOption by mutableStateOf("")
     var commentForStatusUpdate by mutableStateOf("")
     var showStatusUpdateOptions by mutableStateOf(false)
+    val setShowStatusUpdateOptions: (Boolean) -> Unit = { status ->
+        showStatusUpdateOptions = status
+    }
 
     var showContent by mutableStateOf(false)
 
@@ -120,7 +123,11 @@ class ViewLeadViewModel() : ViewModel() {
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    fun exportLeadsToExcel(leads: List<Lead>, contentResolver: ContentResolver, activity: Activity) {
+    fun exportLeadsToExcel(
+        leads: List<Lead>,
+        contentResolver: ContentResolver,
+        activity: Activity
+    ) {
         val fileName = "Leads.xlsx"
         val contentValues = ContentValues()
         contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
@@ -142,7 +149,7 @@ class ViewLeadViewModel() : ViewModel() {
 
                     val headerRow: Row = sheet.createRow(0)
                     val leadProperties =
-                        Lead::class.java.declaredFields.filter { it.name != "\$stable" && it.name != "id" && it.name != "documentUrl" && it.name != "documentName" && it.name != "documentType" && it.name != "imageUrl"}
+                        Lead::class.java.declaredFields.filter { it.name != "\$stable" && it.name != "id" && it.name != "documentUrl" && it.name != "documentName" && it.name != "documentType" && it.name != "imageUrl" }
                     for ((index, property) in leadProperties.withIndex()) {
                         val cell = headerRow.createCell(index)
                         cell.setCellValue(property.name.capitalize())
@@ -174,7 +181,10 @@ class ViewLeadViewModel() : ViewModel() {
             val toast = "Excel File Generated Successfully"
             val centeredText = SpannableString(toast)
             centeredText.setSpan(
-                AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0, toast.length - 1, Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
+                0,
+                toast.length - 1,
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
             )
             Toast.makeText(activity, centeredText, Toast.LENGTH_SHORT).show()
         } catch (e: IOException) {
@@ -210,7 +220,6 @@ class ViewLeadViewModel() : ViewModel() {
     }
 
 
-
     fun hideLoader() {
         showContent = true
     }
@@ -219,19 +228,19 @@ class ViewLeadViewModel() : ViewModel() {
         showContent = false
     }
 
-    fun onStatusFilterDropdownOptionSelect(text: String){
+    fun onStatusFilterDropdownOptionSelect(text: String) {
         selectedOption = text
     }
 
-    fun onDateSortDropdownOptionSelect(text: String){
+    fun onDateSortDropdownOptionSelect(text: String) {
         dateSortSelectedOption = text
     }
 
-    fun onStatusUpdateDropdownOptionSelect(text: String){
+    fun onStatusUpdateDropdownOptionSelect(text: String) {
         selectedStatusForUpdate = text
     }
 
-    fun onDownloadOptionSelect(text: String){
+    fun onDownloadOptionSelect(text: String) {
         downloadOption = text
     }
 
@@ -291,11 +300,11 @@ class ViewLeadViewModel() : ViewModel() {
             }
     }
 
-    fun getStatusFilterSelectedOption(): String{
+    fun getStatusFilterSelectedOption(): String {
         return selectedOption
     }
 
-    fun getDateSortTypeSelectedOption(): String{
+    fun getDateSortTypeSelectedOption(): String {
         return dateSortSelectedOption
     }
 
@@ -322,13 +331,16 @@ class ViewLeadViewModel() : ViewModel() {
             Toast.makeText(context, centeredText, Toast.LENGTH_SHORT).show()
         }
     }
+
     fun sortLeadsByDate(): List<Lead> {
         val dateFormat = SimpleDateFormat("HH:mm, dd-MMM-yyyy", Locale.getDefault())
 
         val sortedLeads = if (dateSortSelectedOption == "Ascending") {
             completeLeadsList.sortedBy { lead -> dateFormat.parse(lead.dateTimeValue) ?: Date() }
         } else {
-            completeLeadsList.sortedByDescending { lead -> dateFormat.parse(lead.dateTimeValue) ?: Date() }
+            completeLeadsList.sortedByDescending { lead ->
+                dateFormat.parse(lead.dateTimeValue) ?: Date()
+            }
         }
 
         showLoader()
@@ -340,6 +352,7 @@ class ViewLeadViewModel() : ViewModel() {
 
         return sortedLeads
     }
+
     fun onSearch(searchQuery: String) {
         showLoader()
 
@@ -397,7 +410,7 @@ class ViewLeadViewModel() : ViewModel() {
     }
 
     fun getStatusColor(status: String): androidx.compose.ui.graphics.Color {
-        when (status){
+        when (status) {
             "Opened" -> return Color(("#008080").toColorInt()).copy(0.5f)
             "Contacted" -> return Color(("#191744").toColorInt()).copy(0.5f)
             "Hold" -> return Color(("#0054a6").toColorInt()).copy(0.5f)

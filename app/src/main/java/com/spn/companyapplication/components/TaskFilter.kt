@@ -2,36 +2,24 @@ package com.spn.companyapplication.components
 
 import android.app.Activity
 import android.content.ContentResolver
-import android.graphics.drawable.Icon
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.core.graphics.toColorInt
 import com.spn.companyapplication.R
-import com.spn.companyapplication.viewmodels.ViewLeadViewModel
+import com.spn.companyapplication.viewmodels.ViewTaskViewModel
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
-fun BoxScope.Filter(
-    viewModel: ViewLeadViewModel,
+fun BoxScope.TaskFilter(
+    viewModel: ViewTaskViewModel,
     activity: Activity,
     contentResolver: ContentResolver
 ) {
@@ -50,7 +38,7 @@ fun BoxScope.Filter(
         ) {
             IconWithText(icon = R.drawable.ic_download, text = "Download") {
                 viewModel.showDownloadOptions = true
-            } //Download Leads
+            } //Download Tasks
 
             Spacer(
                 modifier = Modifier
@@ -73,7 +61,7 @@ fun BoxScope.Filter(
 
             IconWithText(icon = R.drawable.ic_filter, text = "Filter") {
                 viewModel.showOptions = true
-            } //Filter based on Lead Status
+            } //Filter based on Task Status
         }
 
         val configuration = LocalConfiguration.current
@@ -86,12 +74,11 @@ fun BoxScope.Filter(
                     options = viewModel.filterOptions,
                     onSelected = { viewModel.onStatusFilterDropdownOptionSelect(it) },
                     onClickMap = mapOf(
-                        Pair("Opened") { viewModel.fetchLeads(activity) },
-                        Pair("Contacted") { viewModel.fetchLeads(activity) },
-                        Pair("Hold") { viewModel.fetchLeads(activity) },
-                        Pair("Lost/Closed") { viewModel.fetchLeads(activity) },
-                        Pair("Converted") { viewModel.fetchLeads(activity) },
-                        Pair("") { viewModel.fetchLeads(activity) },
+                        Pair("Opened") { viewModel.fetchTasks(activity) },
+                        Pair("In-Progress") { viewModel.fetchTasks(activity) },
+                        Pair("Testing") { viewModel.fetchTasks(activity) },
+                        Pair("Completed") { viewModel.fetchTasks(activity) },
+                        Pair("") { viewModel.fetchTasks(activity) },
                     ),
                     getSelectedOption = { viewModel.getStatusFilterSelectedOption() }
                 )
@@ -106,9 +93,9 @@ fun BoxScope.Filter(
                     options = viewModel.dateSortOptions,
                     onSelected = { viewModel.onDateSortDropdownOptionSelect(it) },
                     onClickMap = mapOf(
-                        Pair("Ascending") { viewModel.sortLeadsByDate() },
-                        Pair("Descending") { viewModel.sortLeadsByDate() },
-                        Pair("") { viewModel.fetchLeads(activity) },
+                        Pair("Ascending") { viewModel.sortTasksByDate() },
+                        Pair("Descending") { viewModel.sortTasksByDate() },
+                        Pair("") { viewModel.fetchTasks(activity) },
                     ),
                     getSelectedOption = { viewModel.getDateSortTypeSelectedOption() }
                 )
@@ -124,49 +111,17 @@ fun BoxScope.Filter(
                     onSelected = { viewModel.onDownloadOptionSelect(it) },
                     onClickMap = mapOf(
                         Pair("Excel") {
-                            viewModel.exportLeadsToExcel(
-                                viewModel.leadsList,
+                            viewModel.exportTasksToExcel(
+                                viewModel.tasksList,
                                 contentResolver,
                                 activity
                             )
                         },
-                        Pair("PDF") { viewModel.generatePDF(viewModel.leadsList, activity) },
+                        Pair("PDF") { viewModel.generatePDF(viewModel.tasksList, activity) },
                     ),
                     getSelectedOption = { viewModel.getDateSortTypeSelectedOption() }
                 )
             }
         }
-    }
-}
-
-
-@Composable
-fun IconWithText(icon: Int, text: String, onClick: () -> Unit) {
-    Row(Modifier
-        .padding(horizontal = 10.dp)
-        .clickable(
-            interactionSource = MutableInteractionSource(),
-            indication = null,
-            onClick = {
-                onClick.invoke()
-            }
-        )) {
-        Icon(
-            painter = painterResource(id = icon),
-            contentDescription = "",
-            tint = Color.Gray,
-            modifier = Modifier
-                .size(23.dp)
-                .align(Alignment.CenterVertically)
-        )
-        Spacer(Modifier.width(10.dp))
-        Text(
-            text = text, style = TextStyle(
-                fontFamily = FontFamily(Font(R.font.outfit_semibold)),
-                fontSize = 15.sp,
-                color = Color.Gray
-            ),
-            modifier = Modifier.align(Alignment.CenterVertically)
-        )
     }
 }
