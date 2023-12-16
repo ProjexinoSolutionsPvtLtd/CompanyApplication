@@ -16,18 +16,21 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.spn.companyapplication.R
-import com.spn.companyapplication.viewmodels.AddLeadViewModel
 
 @Composable
 fun CountryCodeDropdown(
-    viewModel: AddLeadViewModel
+    getCountryCodeNumber: () -> String,
+    number: String,
+    numberChange:(String) -> Unit,
+    formattedCountryCodes: List<String>,
+    onCountryCodeSelected: (String)->Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     Box{
         OutlinedTextField(
-            value = "${viewModel.getCountryCodeNumber()} ${viewModel.number}",
-            onValueChange = { viewModel.numberChange(it) },
+            value = "${getCountryCodeNumber()} $number",
+            onValueChange = { numberChange(it) },
             modifier = Modifier.fillMaxWidth(),
             textStyle = TextStyle(
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
@@ -63,10 +66,10 @@ fun CountryCodeDropdown(
             modifier = Modifier.height(200.dp),
             onDismissRequest = { expanded = false }
         ) {
-            viewModel.formattedCountryCodes.forEach { code ->
+            formattedCountryCodes.forEach { code ->
                 DropdownMenuItem(
                     onClick = {
-                        viewModel.onCountryCodeSelected(code)
+                        onCountryCodeSelected(code)
                         expanded = false
                     }
                 ) {

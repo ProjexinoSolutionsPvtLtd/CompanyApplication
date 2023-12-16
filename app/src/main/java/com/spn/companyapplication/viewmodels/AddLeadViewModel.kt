@@ -53,8 +53,32 @@ class AddLeadViewModel() : ViewModel() {
     var selectedDocumentSize: Long by mutableStateOf(0L)
     var selectedDocumentMimeType: String by mutableStateOf("")
 
+    val setSelectedDocumentUri: (Uri) -> Unit = { uri ->
+        selectedDocumentUri = uri
+    }
+
+    val setSelectedDocumentName: (String) -> Unit = { name ->
+        selectedDocumentName = name
+    }
+
+    val setSelectedDocumentSize: (Long) -> Unit = { size ->
+        selectedDocumentSize = size
+    }
+
+    val setSelectedDocumentMimeType: (String) -> Unit = { mimeType ->
+        selectedDocumentMimeType = mimeType
+    }
+
     var capturedBitmap by mutableStateOf<Bitmap?>(null)
+    val setCapturedBitmap: (Bitmap) -> Unit = { bitmap ->
+        capturedBitmap = bitmap
+    }
+
     var showImage by mutableStateOf(false)
+    val setShowImage: (Boolean) -> Unit = { status ->
+        showImage = status
+    }
+
 
     var validate by mutableStateOf(false)
 
@@ -297,16 +321,16 @@ class AddLeadViewModel() : ViewModel() {
         email = text
     }
 
-    fun numberChange(text: String) {
+    val numberChange: (String) -> Unit = { text ->
         number = text.removePrefix(getCountryCodeNumber()).trim()
     }
 
-    fun onCountryCodeSelected(text: String) {
+    val onCountryCodeSelected: (String) -> Unit = { text ->
         countryCode = text
     }
 
-    fun getCountryCodeNumber(): String {
-        return countryCode.split(" ")[1].replace("(", "").replace(")", "")
+    val getCountryCodeNumber: () -> String = {
+        countryCode.split(" ")[1].replace("(", "").replace(")", "")
     }
 
     fun addressChange(text: String) {
@@ -333,7 +357,7 @@ class AddLeadViewModel() : ViewModel() {
         }
     }
 
-    fun getDocumentName(contentResolver: ContentResolver, uri: Uri): String? {
+    val getDocumentName: (ContentResolver, Uri) -> String = { contentResolver, uri ->
         var displayName: String? = null
         val cursor: Cursor? = contentResolver.query(uri, null, null, null, null)
         cursor?.use {
@@ -342,10 +366,11 @@ class AddLeadViewModel() : ViewModel() {
             }
         }
         cursor?.close()
-        return displayName
+        displayName ?: ""
     }
 
-    fun getDocumentSize(contentResolver: ContentResolver, uri: Uri): Long? {
+
+    val getDocumentSize: (ContentResolver, Uri) -> Long = { contentResolver, uri ->
         var size: Long? = null
         val cursor: Cursor? = contentResolver.query(uri, null, null, null, null)
         cursor?.use {
@@ -354,10 +379,10 @@ class AddLeadViewModel() : ViewModel() {
             }
         }
         cursor?.close()
-        return size
+        size?:0
     }
 
-    fun getDocumentMimeType(contentResolver: ContentResolver, uri: Uri): String? {
+    val getDocumentMimeType: (ContentResolver, Uri) -> String = { contentResolver, uri ->
         var type = ""
         var list = contentResolver.getType(uri)?.split("/")!!
 
@@ -367,7 +392,7 @@ class AddLeadViewModel() : ViewModel() {
                 Log.d("TAG99", type)
             }
         }
-        return contentResolver.getType(uri)?.split("/")!![1].uppercase()
+        contentResolver.getType(uri)?.split("/")!![1].uppercase()?:""
     }
 
     fun getCurrentUserRole(activity: Activity): String {

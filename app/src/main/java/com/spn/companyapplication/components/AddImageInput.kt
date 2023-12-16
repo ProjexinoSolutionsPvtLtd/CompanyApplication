@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.net.Uri
 import android.provider.MediaStore
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -39,17 +40,26 @@ import com.spn.companyapplication.R
 import com.spn.companyapplication.viewmodels.AddLeadViewModel
 
 @Composable
-fun AddImageInput(context: Context, viewModel: AddLeadViewModel) {
+fun AddImageInput(
+    showImage: Boolean,
+    setShowImage: (status: Boolean) -> Unit,
+    capturedBitmap: Bitmap?,
+    setCapturedBitmap: (bitmap: Bitmap) -> Unit,
+) {
     val focusManager = LocalFocusManager.current
     val launcher =
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.TakePicturePreview(),
         ) { bitmap ->
-            viewModel.capturedBitmap = bitmap
+            setCapturedBitmap(bitmap!!)
         }
 
-    if(viewModel.showImage){
-        ShowImage(showImage = viewModel.showImage, onDismiss = { viewModel.showImage = false }, bitmap = viewModel.capturedBitmap!!)
+    if (showImage) {
+        ShowImage(
+            showImage = showImage,
+            onDismiss = { setShowImage(false) },
+            bitmap = capturedBitmap!!
+        )
     }
 
     Card(
@@ -67,7 +77,7 @@ fun AddImageInput(context: Context, viewModel: AddLeadViewModel) {
             Modifier
                 .padding(
                     horizontal = 13.dp,
-                    vertical = if (viewModel.capturedBitmap != null) 8.dp else 0.dp
+                    vertical = if (capturedBitmap != null) 8.dp else 0.dp
                 )
                 .fillMaxSize(), verticalArrangement = Arrangement.Center
         ) {
@@ -77,15 +87,15 @@ fun AddImageInput(context: Context, viewModel: AddLeadViewModel) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    if (viewModel.capturedBitmap != null) "Image" else "Upload Image",
+                    if (capturedBitmap != null) "Image" else "Upload Image",
                     style = TextStyle(
-                        fontFamily = FontFamily(Font(if (viewModel.capturedBitmap != null) R.font.outfit_medium else R.font.outfit_regular)),
+                        fontFamily = FontFamily(Font(if (capturedBitmap != null) R.font.outfit_medium else R.font.outfit_regular)),
                         fontSize = 17.sp,
                         color = Color.Black
                     )
                 )
 
-                if (viewModel.capturedBitmap == null) {
+                if (capturedBitmap == null) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_camera),
                         contentDescription = "",
@@ -94,15 +104,15 @@ fun AddImageInput(context: Context, viewModel: AddLeadViewModel) {
                 }
             }
 
-            if (viewModel.capturedBitmap != null) {
+            if (capturedBitmap != null) {
                 Spacer(modifier = Modifier.height(5.dp))
                 Image(
-                    bitmap = viewModel.capturedBitmap!!.asImageBitmap(),
+                    bitmap = capturedBitmap!!.asImageBitmap(),
                     contentDescription = "",
                     modifier = Modifier
                         .size(200.dp)
                         .clickable {
-                            viewModel.showImage = true
+                            setShowImage(true)
                         })
             }
         }

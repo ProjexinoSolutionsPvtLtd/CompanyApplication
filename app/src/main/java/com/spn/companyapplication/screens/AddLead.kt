@@ -45,7 +45,7 @@ class AddLead : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             viewModel.validation()
-            if(viewModel.dateTimeValue == "") {
+            if (viewModel.dateTimeValue == "") {
                 viewModel.setDefaultDate()
             }
 
@@ -97,7 +97,13 @@ class AddLead : ComponentActivity() {
                                         value = viewModel.role,
                                         onChange = { viewModel.roleChange(it) })
                                     Spacer(Modifier.height(10.dp))
-                                    CountryCodeDropdown(viewModel)
+                                    CountryCodeDropdown(
+                                        viewModel.getCountryCodeNumber,
+                                        viewModel.number,
+                                        viewModel.numberChange,
+                                        viewModel.formattedCountryCodes,
+                                        viewModel.onCountryCodeSelected
+                                    )
                                     Spacer(Modifier.height(10.dp))
                                     TextInput(
                                         label = "Mail ID",
@@ -124,12 +130,27 @@ class AddLead : ComponentActivity() {
                                         onSelect = { viewModel.onDateTimeSelect(it, this@AddLead) }
                                     )
                                     Spacer(Modifier.height(10.dp))
+
                                     AddDocumentInput(
-                                        viewModel,
-                                        LocalContext.current.contentResolver
+                                        getDocumentName = viewModel.getDocumentName,
+                                        getDocumentSize = viewModel.getDocumentSize,
+                                        getDocumentMimeType = viewModel.getDocumentMimeType,
+                                        selectedDocumentUri = viewModel.selectedDocumentUri,
+                                        selectedDocumentName = viewModel.selectedDocumentName,
+                                        selectedDocumentMimeType = viewModel.selectedDocumentMimeType,
+                                        setSelectedDocumentUri = viewModel.setSelectedDocumentUri,
+                                        setSelectedDocumentName = viewModel.setSelectedDocumentName,
+                                        setSelectedDocumentSize = viewModel.setSelectedDocumentSize,
+                                        setSelectedDocumentMimeType = viewModel.setSelectedDocumentMimeType,
+                                        contentResolver = LocalContext.current.contentResolver
                                     )
                                     Spacer(Modifier.height(20.dp))
-                                    AddImageInput(this@AddLead, viewModel)
+                                    AddImageInput(
+                                        viewModel.showImage,
+                                        viewModel.setShowImage,
+                                        viewModel.capturedBitmap,
+                                        viewModel.setCapturedBitmap
+                                    )
                                     Spacer(Modifier.height(30.dp))
                                     Button(
                                         text = "Submit",

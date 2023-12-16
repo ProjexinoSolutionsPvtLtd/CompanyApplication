@@ -33,19 +33,28 @@ import com.spn.companyapplication.viewmodels.AddLeadViewModel
 
 @Composable
 fun AddDocumentInput(
-    viewModel: AddLeadViewModel,
+    getDocumentName: (contentResolver: ContentResolver, uri: Uri) -> String,
+    getDocumentSize: (contentResolver: ContentResolver, uri: Uri) -> Long,
+    getDocumentMimeType: (contentResolver: ContentResolver, uri: Uri) -> String,
+    selectedDocumentUri: Uri?,
+    selectedDocumentName: String,
+    selectedDocumentMimeType: String,
+    setSelectedDocumentUri: (uri: Uri) -> Unit,
+    setSelectedDocumentName:(name: String) -> Unit,
+    setSelectedDocumentSize:(size: Long)->Unit,
+    setSelectedDocumentMimeType:(mimeType: String)->Unit,
     contentResolver: ContentResolver
 ) {
     val pickDocument =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let { documentUri ->
-                viewModel.selectedDocumentUri = documentUri
-                viewModel.selectedDocumentName =
-                    viewModel.getDocumentName(contentResolver, documentUri) ?: ""
-                viewModel.selectedDocumentSize =
-                    viewModel.getDocumentSize(contentResolver, documentUri) ?: 0L
-                viewModel.selectedDocumentMimeType =
-                    viewModel.getDocumentMimeType(contentResolver, documentUri) ?: ""
+                setSelectedDocumentUri(documentUri)
+                setSelectedDocumentName (
+                    getDocumentName(contentResolver, documentUri) ?: "")
+                setSelectedDocumentSize(
+                    getDocumentSize(contentResolver, documentUri) ?: 0L)
+                setSelectedDocumentMimeType(
+                    getDocumentMimeType(contentResolver, documentUri) ?: "")
             }
         }
     Card(
@@ -63,7 +72,7 @@ fun AddDocumentInput(
             Modifier
                 .padding(
                     horizontal = 13.dp,
-                    vertical = if (viewModel.selectedDocumentUri != null) 8.dp else 0.dp
+                    vertical = if (selectedDocumentUri != null) 8.dp else 0.dp
                 )
                 .fillMaxSize(), verticalArrangement = Arrangement.Center
         ) {
@@ -73,15 +82,15 @@ fun AddDocumentInput(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    if (viewModel.selectedDocumentUri != null) "Document" else "Upload Document",
+                    if (selectedDocumentUri != null) "Document" else "Upload Document",
                     style = TextStyle(
-                        fontFamily = FontFamily(Font(if (viewModel.selectedDocumentUri != null) R.font.outfit_medium else R.font.outfit_regular)),
+                        fontFamily = FontFamily(Font(if (selectedDocumentUri != null) R.font.outfit_medium else R.font.outfit_regular)),
                         fontSize = 17.sp,
                         color = Color.Black
                     )
                 )
 
-                if (viewModel.selectedDocumentUri == null) {
+                if (selectedDocumentUri == null) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_upload),
                         contentDescription = "",
@@ -90,7 +99,7 @@ fun AddDocumentInput(
                 }
             }
 
-            if (viewModel.selectedDocumentUri != null) {
+            if (selectedDocumentUri != null) {
                 Spacer(modifier = Modifier.height(5.dp))
                 Card(
                     modifier = Modifier.heightIn(min = 50.dp),
@@ -106,7 +115,7 @@ fun AddDocumentInput(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            viewModel.selectedDocumentName, style = TextStyle(
+                            selectedDocumentName, style = TextStyle(
                                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                                 fontSize = 17.sp,
                                 color = Color.Black
@@ -114,7 +123,7 @@ fun AddDocumentInput(
                             modifier = Modifier.widthIn(max = 250.dp)
                         )
                         Text(
-                            viewModel.selectedDocumentMimeType, style = TextStyle(
+                            selectedDocumentMimeType, style = TextStyle(
                                 fontFamily = FontFamily(Font(R.font.outfit_semibold)),
                                 fontSize = 12.sp,
                                 color = Color.Black

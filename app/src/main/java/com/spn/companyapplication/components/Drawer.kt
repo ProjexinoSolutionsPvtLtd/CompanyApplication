@@ -13,9 +13,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.spn.companyapplication.R
 import com.spn.companyapplication.models.MenuItem
 import com.spn.companyapplication.screens.AddLead
+import com.spn.companyapplication.screens.AddTask
 import com.spn.companyapplication.screens.Home
 import com.spn.companyapplication.screens.Login
 import com.spn.companyapplication.screens.ViewLead
+import com.spn.companyapplication.screens.ViewTask
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -60,6 +62,18 @@ fun Drawer(
                         icon = R.drawable.ic_baseline_home_24
                     ),
                     MenuItem(
+                        id = "add_task",
+                        title = "Add Task",
+                        contentDescription = "",
+                        icon = R.drawable.add_task
+                    ),
+                    MenuItem(
+                        id = "view_tasks",
+                        title = "View Tasks",
+                        contentDescription = "",
+                        icon = R.drawable.view_task
+                    ),
+                    MenuItem(
                         id = "add_lead",
                         title = "Add Lead",
                         contentDescription = "",
@@ -85,6 +99,22 @@ fun Drawer(
                             Intent(
                                 activity,
                                 Home::class.java
+                            ),
+                            null
+                        )
+                        "add_task" -> startActivity(
+                            context,
+                            Intent(
+                                activity,
+                                AddTask::class.java
+                            ),
+                            null
+                        )
+                        "view_tasks" -> startActivity(
+                            context,
+                            Intent(
+                                activity,
+                                ViewTask::class.java
                             ),
                             null
                         )

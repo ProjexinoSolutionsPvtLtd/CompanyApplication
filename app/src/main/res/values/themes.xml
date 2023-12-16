@@ -4,6 +4,7 @@
     <style name="Theme.CompanyApplication" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@color/purple_700</item>
     </style>
+
     <style name="Theme.Picker" parent="android:Theme.Material.Light.Dialog.NoActionBar">
         <item name="android:colorAccent">@color/theme</item>
     </style>
