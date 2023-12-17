@@ -139,7 +139,11 @@ class AddTaskViewModel : ViewModel() {
             firebaseFirestore.collection("tasks").document(it.id).update(taskId)
                 .addOnSuccessListener {
                     Toast.makeText(context, "Task Added Successfully", Toast.LENGTH_SHORT).show()
-                    val content = "You have been assigned a new task! Here are the details: -\n\nProject Name: $projectName\nTask Name: $name\nModules Included: $modulesIncluded\nDeadline: $deadline"
+                    val content = "<p style=\"font-size: 16px; font-weight: bold;\">You have been assigned a new task! Here are the details: -</p>\n" +
+                            "<p><b>Project Name:</b> $projectName</p>\n" +
+                            "<p><b>Task Name:</b> $name</p>\n" +
+                            "<p><b>Modules Included:</b> $modulesIncluded</p>\n" +
+                            "<p><b>Deadline:</b> $deadline</p>"
                     assignToList.forEach { assignedUser ->
                         sendEmail(assignedUser, "New Task Assigned", content, context) {
                             // onSuccess logic, if needed

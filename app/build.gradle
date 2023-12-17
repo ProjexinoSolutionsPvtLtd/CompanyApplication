@@ -41,6 +41,8 @@ android {
     }
     packagingOptions {
         resources {
+            exclude 'META-INF/NOTICE.md'
+            exclude 'META-INF/LICENSE.md'
             exclude 'META-INF/DEPENDENCIES'
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
             exclude("org/apache/batik/util/gui/resources/flags/flag_ro.gif")
@@ -64,8 +66,8 @@ dependencies {
 
 
     //Email
-    implementation ("com.sun.mail:android-mail:1.6.0")
-    implementation ("com.sun.mail:android-activation:1.6.0")
+    implementation 'com.sun.mail:android-mail:1.6.6'
+    implementation 'com.sun.mail:android-activation:1.6.6'
 
     //Pager
     implementation "com.google.accompanist:accompanist-pager:0.21.0-beta"

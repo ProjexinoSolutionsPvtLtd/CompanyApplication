@@ -54,8 +54,8 @@ fun sendEmail(
             message.setFrom(InternetAddress(username))
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to))
             message.subject = subject
-            message.setText(content)
 
+            message.setContent(content, "text/html; charset=utf-8")
             // Send the message using the Transport class
             Transport.send(message)
 
@@ -73,7 +73,7 @@ fun sendEmail(
             // Perform UI operations on the Main dispatcher
             CoroutineScope(Dispatchers.Main).launch {
                 // Display an error toast message
-                Log.d("LOG76", "$e")
+                Log.d("LOGs76", "$e")
                 Toast.makeText(context, "Problem exists: $e", Toast.LENGTH_LONG).show()
             }
         }
