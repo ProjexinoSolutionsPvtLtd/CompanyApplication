@@ -41,7 +41,7 @@ class AddTask : ComponentActivity() {
             if (viewModel.deadline == "") {
                 viewModel.setDefaultDate()
             }
-            val extraFields = remember { mutableStateListOf("Assign To") }
+            val extraFields = remember { mutableStateListOf("Assign To (Email ID)") }
             val fieldValues = mutableStateListOf<String>()
 
             fun updateFieldValue(index: Int, value: String) {
@@ -60,7 +60,7 @@ class AddTask : ComponentActivity() {
 
             fun toggleField(index: Int) {
                 if (index == 0) {
-                    extraFields.add("Assign To")
+                    extraFields.add("Assign To (Email ID)")
                     viewModel.addAssignToChangeFunction()
                 } else {
                     extraFields.removeAt(0)

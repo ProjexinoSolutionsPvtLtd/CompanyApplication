@@ -52,7 +52,7 @@ class ViewTask : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val viewModel by viewModels<ViewTaskViewModel>()
 
-        viewModel.fetchTasks(this@ViewTask)
+        viewModel.setupTasksListener(this@ViewTask)
 
         setContent {
             val keyboardController = LocalSoftwareKeyboardController.current

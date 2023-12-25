@@ -231,6 +231,22 @@ class ViewTaskViewModel() : ViewModel() {
         downloadOption = text
     }
 
+    fun setupTasksListener(activity: Activity) {
+        val firestore = FirebaseFirestore.getInstance()
+        val leadsCollection = firestore.collection("tasks")
+
+        leadsCollection.addSnapshotListener { snapshot, exception ->
+            if (exception != null) {
+                Log.e("TAG253", "Error listening to tasks: $exception")
+                return@addSnapshotListener
+            }
+
+            snapshot?.let { querySnapshot ->
+                fetchTasks(activity)
+            }
+        }
+    }
+
     fun fetchTasks(activity: Activity) {
         showLoader()
         tasksList.clear()
@@ -284,6 +300,24 @@ class ViewTaskViewModel() : ViewModel() {
                 Log.e("TAG", "Error fetching tasks: $exception")
 
                 hideLoader()
+            }
+    }
+
+    fun deleteTask(taskId: String) {
+
+        val firestore = FirebaseFirestore.getInstance()
+
+        val tasksCollection = firestore.collection("tasks")
+        tasksCollection.document(taskId)
+            .delete()
+            .addOnSuccessListener {
+
+                Log.d("TAG253", "Works delete to tasks")
+
+            }
+            .addOnFailureListener { e ->
+                Log.e("TAG253", "Fails delete to tasks")
+
             }
     }
 

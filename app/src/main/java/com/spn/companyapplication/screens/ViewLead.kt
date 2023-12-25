@@ -52,7 +52,7 @@ class ViewLead : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val viewModel by viewModels<ViewLeadViewModel>()
 
-        viewModel.fetchLeads(this@ViewLead)
+        viewModel.setupLeadsListener(this@ViewLead)
 
         setContent {
             val keyboardController = LocalSoftwareKeyboardController.current

@@ -81,13 +81,36 @@ fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel, activit
                 Spacer(modifier = Modifier.width(15.dp))
 
                 Column {
-                    Text(
-                        lead.name, style = TextStyle(
-                            fontFamily = FontFamily(Font(R.font.outfit_semibold)),
-                            fontSize = 19.sp,
-                            color = Color.Black
+                    Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
+                        Text(
+                            lead.name, style = TextStyle(
+                                fontFamily = FontFamily(Font(R.font.outfit_semibold)),
+                                fontSize = 19.sp,
+                                color = Color.Black
+                            )
                         )
-                    )
+
+                        Box(
+                            Modifier
+                                .size(25.dp)
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(color = Color.Red)
+                                .clickable(
+                                    interactionSource = MutableInteractionSource(),
+                                    indication = null,
+                                    onClick = {
+                                        viewModel.deleteLead(lead.id)
+                                    }
+                                )
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.delete),
+                                contentDescription = "delete",
+                                tint = Color.White,
+                                modifier = Modifier.align(Alignment.Center).size(18.dp)
+                            )
+                        }
+                    }
 //            }
 
                     Spacer(Modifier.height(5.dp))
@@ -122,6 +145,8 @@ fun LeadCard(lead: Lead, context: Context, viewModel: ViewLeadViewModel, activit
 
                     Spacer(Modifier.height(5.dp))
                 }
+
+
             }
 
             if (isExpanded) {

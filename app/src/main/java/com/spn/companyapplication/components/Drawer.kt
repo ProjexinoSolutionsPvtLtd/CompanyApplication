@@ -55,12 +55,12 @@ fun Drawer(
             DrawerHeader()
             DrawerBody(
                 items = listOf(
-                    MenuItem(
-                        id = "home",
-                        title = "Home",
-                        contentDescription = "",
-                        icon = R.drawable.ic_baseline_home_24
-                    ),
+//                    MenuItem(
+//                        id = "home",
+//                        title = "Home",
+//                        contentDescription = "",
+//                        icon = R.drawable.ic_baseline_home_24
+//                    ),
                     MenuItem(
                         id = "add_task",
                         title = "Add Task",
@@ -94,14 +94,14 @@ fun Drawer(
                 ),
                 onItemClick = {
                     when (it.id) {
-                        "home" -> startActivity(
-                            context,
-                            Intent(
-                                activity,
-                                Home::class.java
-                            ),
-                            null
-                        )
+//                        "home" -> startActivity(
+//                            context,
+//                            Intent(
+//                                activity,
+//                                Home::class.java
+//                            ),
+//                            null
+//                        )
                         "add_task" -> startActivity(
                             context,
                             Intent(

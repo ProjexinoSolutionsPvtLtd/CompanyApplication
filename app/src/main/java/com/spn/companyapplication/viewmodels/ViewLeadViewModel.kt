@@ -244,6 +244,21 @@ class ViewLeadViewModel() : ViewModel() {
         downloadOption = text
     }
 
+    fun setupLeadsListener(activity: Activity) {
+        val firestore = FirebaseFirestore.getInstance()
+        val leadsCollection = firestore.collection("leads")
+
+        leadsCollection.addSnapshotListener { snapshot, exception ->
+            if (exception != null) {
+                Log.e("TAG253", "Error listening to leads: $exception")
+                return@addSnapshotListener
+            }
+
+            snapshot?.let { querySnapshot ->
+                fetchLeads(activity)
+            }
+        }
+    }
     fun fetchLeads(activity: Activity) {
         showLoader()
         leadsList.clear()
@@ -298,6 +313,15 @@ class ViewLeadViewModel() : ViewModel() {
 
                 hideLoader()
             }
+    }
+
+    fun deleteLead(leadId: String) {
+
+        val firestore = FirebaseFirestore.getInstance()
+
+        val leadsCollection = firestore.collection("leads")
+        leadsCollection.document(leadId)
+            .delete()
     }
 
     fun getStatusFilterSelectedOption(): String {
