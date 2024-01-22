@@ -18,6 +18,7 @@ import javax.mail.internet.MimeMessage
 
 fun sendEmail(
     to: String,
+    from: String,
     subject: String,
     content: String,
     context: Context,
@@ -29,19 +30,16 @@ fun sendEmail(
         val host = "smtp.hostinger.com"
         val port = 587
         val username = "pranav@projexino.tech"
-        val password = "Projexino@1234" // user the apps password not your real gmail password
+        val password = "Projexino@1234"
 
-        // Email recipient
         val to = to
 
-        // Configure SMTP properties
         val props = Properties()
         props["mail.smtp.auth"] = "true"
         props["mail.smtp.starttls.enable"] = "true"
         props["mail.smtp.host"] = host
         props["mail.smtp.port"] = port
 
-        // Create a session with authentication
         val session = Session.getInstance(props, object : Authenticator() {
             override fun getPasswordAuthentication(): PasswordAuthentication {
                 return PasswordAuthentication(username, password)
@@ -56,10 +54,8 @@ fun sendEmail(
             message.subject = subject
 
             message.setContent(content, "text/html; charset=utf-8")
-            // Send the message using the Transport class
             Transport.send(message)
 
-            // Perform UI operations on the Main dispatcher
             CoroutineScope(Dispatchers.Main).launch {
                 // Display a success toast message
 //                Toast.makeText(context, "Sent Successfully.", Toast.LENGTH_LONG).show()
@@ -70,7 +66,11 @@ fun sendEmail(
         } catch (e: MessagingException) {
             e.printStackTrace()
 
-            // Perform UI operations on the Main dispatcher
+            // Perform UI operations on the
+            //
+            //
+            //
+            // Main dispatcher
             CoroutineScope(Dispatchers.Main).launch {
                 // Display an error toast message
                 Log.d("LOGs76", "$e")
