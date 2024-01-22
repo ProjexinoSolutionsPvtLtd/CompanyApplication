@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.toColorInt
@@ -45,6 +46,7 @@ fun AddImageInput(
     setShowImage: (status: Boolean) -> Unit,
     capturedBitmap: Bitmap?,
     setCapturedBitmap: (bitmap: Bitmap) -> Unit,
+    context: Context
 ) {
     val focusManager = LocalFocusManager.current
     val launcher =
@@ -52,6 +54,22 @@ fun AddImageInput(
             contract = ActivityResultContracts.TakePicturePreview(),
         ) { bitmap ->
             setCapturedBitmap(bitmap!!)
+        }
+
+
+    val cameraLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.TakePicturePreview()
+        ) { bitmap ->
+            setCapturedBitmap(bitmap!!)
+        }
+
+    val galleryLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.GetContent()
+        ) { uri ->
+            val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+            setCapturedBitmap(bitmap)
         }
 
     if (showImage) {
@@ -62,6 +80,58 @@ fun AddImageInput(
         )
     }
 
+
+    val openDialog = remember { mutableStateOf(false) }
+    if(openDialog.value){
+        AlertDialog(
+            modifier = Modifier.padding(0.dp),
+            onDismissRequest = { openDialog.value = false },
+            title = { Text("Image Options", style = TextStyle(
+                        fontFamily = FontFamily(Font(R.font.outfit_bold)),
+                        fontSize = 20.sp,
+                        color = Color.Black
+                    ))},
+            text = {
+                Column {
+                    val items = arrayOf("Take Photo", "Choose from Gallery")
+                    items.forEachIndexed { index, text ->
+                        Text(
+                            text = text,
+                            style = TextStyle(
+                                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                fontSize = 17.sp,
+                                color = Color.Black
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    when (index) {
+                                        0 -> cameraLauncher.launch(null)
+                                        1 -> galleryLauncher.launch("image/*")
+                                    }
+                                    openDialog.value = false
+                                }
+                                .padding(vertical = 8.dp)
+                        )
+                        if (index < items.size - 1) {
+                            Divider()
+                        }
+                    }
+                }
+            },
+            buttons = {
+//                TextButton(onClick = { openDialog.value = false }) {
+//                    Text("Cancel", style = TextStyle(
+//                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+//                        fontSize = 17.sp,
+//                        color = Color.Black
+//                    ))
+//                }
+            }
+        )
+    }
+
+
     Card(
         elevation = 0.dp,
         border = BorderStroke(
@@ -71,7 +141,8 @@ fun AddImageInput(
             .fillMaxWidth()
             .heightIn(min = 60.dp)
             .clickable {
-                launcher.launch(null)
+//                launcher.launch(null)
+                openDialog.value = true
             }) {
         Column(
             Modifier
@@ -112,6 +183,7 @@ fun AddImageInput(
                     modifier = Modifier
                         .size(200.dp)
                         .clickable {
+
                             setShowImage(true)
                         })
             }

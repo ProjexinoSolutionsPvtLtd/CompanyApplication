@@ -149,7 +149,8 @@ class AddLead : ComponentActivity() {
                                         viewModel.showImage,
                                         viewModel.setShowImage,
                                         viewModel.capturedBitmap,
-                                        viewModel.setCapturedBitmap
+                                        viewModel.setCapturedBitmap,
+                                        this@AddLead
                                     )
                                     Spacer(Modifier.height(30.dp))
                                     Button(

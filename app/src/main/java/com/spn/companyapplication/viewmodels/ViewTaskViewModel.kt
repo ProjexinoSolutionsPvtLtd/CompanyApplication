@@ -100,7 +100,7 @@ class ViewTaskViewModel() : ViewModel() {
 
                 document.close()
 
-                Toast.makeText(context, "PDF Generated Successfully", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "PDF Generated Successfully in Downloads", Toast.LENGTH_LONG).show()
             } else {
                 Toast.makeText(context, "Error creating file", Toast.LENGTH_SHORT).show()
             }
@@ -163,7 +163,7 @@ class ViewTaskViewModel() : ViewModel() {
                     workbook.close()
                     outputStream.flush()
                     outputStream.close()
-                    Log.d("TAG61", "Excel File Generated Successfully")
+                    Log.d("TAG61", "Excel File Generated Successfully in Downloads")
                 }
             }
 
