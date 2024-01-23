@@ -29,8 +29,8 @@ fun sendEmail(
         // SMTP server details
         val host = "smtp.hostinger.com"
         val port = 587
-        val username = "pranav@projexino.tech"
-        val password = "Projexino@1234"
+        val username = "task@projexino.com"
+        val password = "Projexino@2021"
 
         val to = to
 

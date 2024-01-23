@@ -143,12 +143,12 @@ class AddTask : ComponentActivity() {
                                         Spacer(Modifier.height(10.dp))
                                     }
                                     Spacer(Modifier.height(10.dp))
-                                    TextInput(
-                                        label = "Mail ID",
-                                        value = viewModel.email,
-                                        onChange = { viewModel.emailChange(it) },
-                                        keyboardType = KeyboardType.Email
-                                    )
+//                                    TextInput(
+//                                        label = "Mail ID",
+//                                        value = viewModel.email,
+//                                        onChange = { viewModel.emailChange(it) },
+//                                        keyboardType = KeyboardType.Email
+//                                    )
 
                                     Spacer(Modifier.height(50.dp))
                                     Button(
